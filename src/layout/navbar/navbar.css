@@ -1,0 +1,168 @@
+/* Navbar styling */
+.navbar {
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  align-items: center;
+}
+
+/* Improved vertical centering */
+.navbar-start,
+.navbar-center,
+.navbar-end {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.navbar-start a,
+.navbar-end > div {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* Logo styling and alignment */
+.navbar-start a {
+  align-items: center !important;
+}
+
+.navbar-start img {
+  margin-top: -2px; /* Ajuste fino para alineación */
+}
+
+/* Logo hover effect */
+.navbar-start a:hover {
+  transform: scale(1.02);
+  transition: transform 0.2s ease;
+}
+
+/* Navigation link styling - Clean, no button appearance */
+.nav-link {
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  color: inherit;
+  background: none;
+  border: none;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #3b82f6;
+  transform: translateY(-1px);
+}
+
+/* Register link with primary styling but still looking like a link */
+.nav-link.primary {
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+  font-weight: 600;
+  box-shadow: none;
+  border: none;
+}
+
+.nav-link.primary:hover {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+/* Override any DaisyUI button classes that might interfere */
+.nav-link.primary:not(.btn) {
+  background: linear-gradient(135deg, #3b82f6, #6366f1) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Search input focus styling */
+.input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+/* Dropdown animation */
+.dropdown-content {
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Avatar hover effect */
+.avatar:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+}
+
+/* Theme toggle animation */
+.swap {
+  transition: all 0.3s ease;
+}
+
+/* Mobile search styling */
+@media (max-width: 1024px) {
+  .navbar-center {
+    display: none;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.5rem 1rem;
+  }
+
+  .navbar-start span {
+    font-size: 1.1rem;
+  }
+
+  .navbar-end .btn {
+    padding: 0.5rem;
+  }
+}
+
+/* Menu item hover effects */
+.menu li > a:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: rgb(59, 130, 246);
+  transition: all 0.2s ease;
+}
+
+/* Logo text gradient effect */
+.text-primary {
+  background: linear-gradient(45deg, #3b82f6, #6366f1);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+/* Search button pulse effect */
+.btn-primary:hover {
+  animation: pulse 0.5s ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
