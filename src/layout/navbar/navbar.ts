@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  HostListener,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth-service';
@@ -25,6 +31,10 @@ export class Navbar {
   userName = computed(() => {
     const user = this.currentUser();
     return user ? `${user.firstName} ${user.lastName}` : '';
+  });
+  firstName = computed(() => {
+    const user = this.currentUser();
+    return user ? user.firstName : '';
   });
 
   constructor() {
@@ -98,5 +108,15 @@ export class Navbar {
     this.currentTheme.set(newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
+  }
+
+  // Cerrar menú cuando se hace click fuera
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    const target = event.target as HTMLElement;
+    const dropdown = target.closest('.dropdown');
+    if (!dropdown && this.isUserMenuOpen()) {
+      this.closeUserMenu();
+    }
   }
 }

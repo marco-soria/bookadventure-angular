@@ -29,7 +29,7 @@ export const routes: Routes = [
   {
     path: 'my-account',
     loadComponent: () =>
-      import('../features/customer/customer').then((m) => m.Customer),
+      import('../features/my-account/my-account').then((m) => m.MyAccount),
     canActivate: [authGuard],
   },
   {

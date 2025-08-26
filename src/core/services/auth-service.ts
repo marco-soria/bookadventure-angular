@@ -38,9 +38,10 @@ export class AuthService {
   );
   isLoading = computed(() => this.authState().isLoading);
   error = computed(() => this.authState().error);
-  isAdmin = computed(
-    () => this.authState().user?.roles?.includes('admin') || false
-  );
+  isAdmin = computed(() => {
+    const roles = this.authState().user?.roles;
+    return roles?.some((role) => role.toLowerCase() === 'admin') || false;
+  });
 
   constructor() {
     this.initializeAuth();
