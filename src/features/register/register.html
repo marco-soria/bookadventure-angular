@@ -47,25 +47,52 @@
 
       <!-- Register Form -->
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-        <!-- Name Field -->
+        <!-- First Name Field -->
         <div class="form-control w-full mb-4">
           <label class="label">
-            <span class="label-text font-medium">Full Name</span>
+            <span class="label-text font-medium">First Name</span>
           </label>
           <input
             type="text"
-            placeholder="Enter your full name"
+            placeholder="Enter your first name"
             class="input input-bordered w-full"
-            [class.input-error]="name?.invalid && name?.touched"
-            formControlName="name"
+            [class.input-error]="firstName?.invalid && firstName?.touched"
+            formControlName="firstName"
           />
-          @if (name?.invalid && name?.touched) {
+          @if (firstName?.invalid && firstName?.touched) {
           <label class="label">
-            @if (name?.errors?.['required']) {
-            <span class="label-text-alt text-error">Name is required</span>
-            } @if (name?.errors?.['minlength']) {
+            @if (firstName?.errors?.['required']) {
             <span class="label-text-alt text-error"
-              >Name must be at least 2 characters</span
+              >First name is required</span
+            >
+            } @if (firstName?.errors?.['minlength']) {
+            <span class="label-text-alt text-error"
+              >First name must be at least 2 characters</span
+            >
+            }
+          </label>
+          }
+        </div>
+
+        <!-- Last Name Field -->
+        <div class="form-control w-full mb-4">
+          <label class="label">
+            <span class="label-text font-medium">Last Name</span>
+          </label>
+          <input
+            type="text"
+            placeholder="Enter your last name"
+            class="input input-bordered w-full"
+            [class.input-error]="lastName?.invalid && lastName?.touched"
+            formControlName="lastName"
+          />
+          @if (lastName?.invalid && lastName?.touched) {
+          <label class="label">
+            @if (lastName?.errors?.['required']) {
+            <span class="label-text-alt text-error">Last name is required</span>
+            } @if (lastName?.errors?.['minlength']) {
+            <span class="label-text-alt text-error"
+              >Last name must be at least 2 characters</span
             >
             }
           </label>
@@ -91,6 +118,66 @@
             } @if (email?.errors?.['email']) {
             <span class="label-text-alt text-error"
               >Please enter a valid email</span
+            >
+            }
+          </label>
+          }
+        </div>
+
+        <!-- Document Number Field -->
+        <div class="form-control w-full mb-4">
+          <label class="label">
+            <span class="label-text font-medium">Document Number</span>
+          </label>
+          <input
+            type="text"
+            placeholder="Enter your document number"
+            class="input input-bordered w-full"
+            [class.input-error]="
+              documentNumber?.invalid && documentNumber?.touched
+            "
+            formControlName="documentNumber"
+          />
+          @if (documentNumber?.invalid && documentNumber?.touched) {
+          <label class="label">
+            @if (documentNumber?.errors?.['required']) {
+            <span class="label-text-alt text-error"
+              >Document number is required</span
+            >
+            } @if (documentNumber?.errors?.['minlength']) {
+            <span class="label-text-alt text-error"
+              >Document number must be at least 8 characters</span
+            >
+            }
+          </label>
+          }
+        </div>
+
+        <!-- Age Field -->
+        <div class="form-control w-full mb-4">
+          <label class="label">
+            <span class="label-text font-medium">Age</span>
+          </label>
+          <input
+            type="number"
+            placeholder="Enter your age"
+            class="input input-bordered w-full"
+            [class.input-error]="age?.invalid && age?.touched"
+            formControlName="age"
+            min="18"
+            max="120"
+          />
+          @if (age?.invalid && age?.touched) {
+          <label class="label">
+            @if (age?.errors?.['required']) {
+            <span class="label-text-alt text-error">Age is required</span>
+            } @if (age?.errors?.['min']) {
+            <span class="label-text-alt text-error"
+              >Must be at least 18 years old</span
+            >
+            } @if (age?.errors?.['max']) {
+            <span class="label-text-alt text-error"
+              >Age must be less than 120</span
             >
             }
           </label>

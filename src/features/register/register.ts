@@ -32,8 +32,11 @@ export class Register {
 
   registerForm: FormGroup = this.fb.group(
     {
-      name: ['', [Validators.required, Validators.minLength(2)]],
+      firstName: ['', [Validators.required, Validators.minLength(2)]],
+      lastName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
+      documentNumber: ['', [Validators.required, Validators.minLength(8)]],
+      age: ['', [Validators.required, Validators.min(18), Validators.max(120)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]],
     },
@@ -50,16 +53,21 @@ export class Register {
   onSubmit(): void {
     if (this.registerForm.valid && !this.isLoading()) {
       const userData: RegisterRequest = {
-        name: this.registerForm.value.name,
+        firstName: this.registerForm.value.firstName,
+        lastName: this.registerForm.value.lastName,
         email: this.registerForm.value.email,
+        documentNumber: this.registerForm.value.documentNumber,
+        age: parseInt(this.registerForm.value.age),
         password: this.registerForm.value.password,
         confirmPassword: this.registerForm.value.confirmPassword,
       };
 
       this.authService.register(userData).subscribe({
-        next: () => {
-          // Redirigir según el rol (por defecto será user)
-          this.router.navigate(['/']);
+        next: (response) => {
+          // Registration successful, redirect to login
+          this.router.navigate(['/login'], {
+            queryParams: { message: 'Registration successful! Please login.' },
+          });
         },
         error: (error) => {
           console.error('Register error:', error);
@@ -105,11 +113,20 @@ export class Register {
   }
 
   // Getters para validación
-  get name() {
-    return this.registerForm.get('name');
+  get firstName() {
+    return this.registerForm.get('firstName');
+  }
+  get lastName() {
+    return this.registerForm.get('lastName');
   }
   get email() {
     return this.registerForm.get('email');
+  }
+  get documentNumber() {
+    return this.registerForm.get('documentNumber');
+  }
+  get age() {
+    return this.registerForm.get('age');
   }
   get password() {
     return this.registerForm.get('password');

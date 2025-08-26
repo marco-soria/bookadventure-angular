@@ -22,7 +22,10 @@ export class Navbar {
   isAuthenticated = this.authService.isAuthenticated;
   currentUser = this.authService.user;
   isAdmin = this.authService.isAdmin;
-  userName = computed(() => this.currentUser()?.name || '');
+  userName = computed(() => {
+    const user = this.currentUser();
+    return user ? `${user.firstName} ${user.lastName}` : '';
+  });
 
   constructor() {
     this.initializeTheme();

@@ -1,8 +1,9 @@
 export interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  role: 'admin' | 'user';
+  roles: string[];
 }
 
 export interface LoginRequest {
@@ -11,22 +12,45 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  token: string;
-  user: User;
+  success: boolean;
+  errorMessage?: string;
+  data?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    token: string;
+    expirationDate: string;
+    refreshToken: string;
+    refreshTokenExpirationDate: string;
+    roles: string[];
+  };
+}
+
+export interface RefreshTokenRequest {
   refreshToken: string;
 }
 
 export interface RegisterRequest {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
+  documentNumber: string;
+  age: number;
   password: string;
   confirmPassword: string;
 }
 
 export interface RegisterResponse {
-  token: string;
-  user: User;
-  refreshToken: string;
+  success: boolean;
+  errorMessage?: string;
+  data?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    message: string;
+  };
 }
 
 export interface AuthState {

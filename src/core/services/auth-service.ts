@@ -9,6 +9,7 @@ import {
   AuthState,
   LoginRequest,
   LoginResponse,
+  RefreshTokenRequest,
   RegisterRequest,
   RegisterResponse,
   User,
@@ -37,7 +38,9 @@ export class AuthService {
   );
   isLoading = computed(() => this.authState().isLoading);
   error = computed(() => this.authState().error);
-  isAdmin = computed(() => this.authState().user?.role === 'admin');
+  isAdmin = computed(
+    () => this.authState().user?.roles?.includes('admin') || false
+  );
 
   constructor() {
     this.initializeAuth();
@@ -46,8 +49,9 @@ export class AuthService {
   private initializeAuth(): void {
     const token = localStorage.getItem('authToken');
     const userStr = localStorage.getItem('user');
+    const refreshToken = localStorage.getItem('refreshToken');
 
-    if (token && userStr) {
+    if (token && userStr && refreshToken) {
       try {
         const user = JSON.parse(userStr) as User;
         this.updateAuthState({
@@ -74,17 +78,26 @@ export class AuthService {
       .post<LoginResponse>(`${environment.baseUrl}users/login`, credentials)
       .pipe(
         tap((response) => {
-          this.setAuthData(
-            response.token,
-            response.user,
-            response.refreshToken
-          );
-          this.updateAuthState({
-            user: response.user,
-            token: response.token,
-            isLoading: false,
-            error: null,
-          });
+          if (response.success && response.data) {
+            const user: User = {
+              id: response.data.id,
+              firstName: response.data.firstName,
+              lastName: response.data.lastName,
+              email: response.data.email,
+              roles: response.data.roles,
+            };
+            this.setAuthData(
+              response.data.token,
+              user,
+              response.data.refreshToken
+            );
+            this.updateAuthState({
+              user,
+              token: response.data.token,
+              isLoading: false,
+              error: null,
+            });
+          }
         }),
         catchError((error) => this.handleError(error))
       );
@@ -98,20 +111,19 @@ export class AuthService {
     });
 
     return this.http
-      .post<RegisterResponse>(`${environment.baseUrl}auth/register`, userData)
+      .post<RegisterResponse>(`${environment.baseUrl}users/register`, userData)
       .pipe(
         tap((response) => {
-          this.setAuthData(
-            response.token,
-            response.user,
-            response.refreshToken
-          );
-          this.updateAuthState({
-            user: response.user,
-            token: response.token,
-            isLoading: false,
-            error: null,
-          });
+          if (response.success && response.data) {
+            // For register, we don't get a token back, so we clear auth state
+            // User will need to login after registration
+            this.updateAuthState({
+              user: null,
+              token: null,
+              isLoading: false,
+              error: null,
+            });
+          }
         }),
         catchError((error) => this.handleError(error))
       );
@@ -134,36 +146,54 @@ export class AuthService {
       return throwError(() => new Error('No refresh token available'));
     }
 
+    const request: RefreshTokenRequest = { refreshToken };
+
     return this.http
-      .post<LoginResponse>(`${environment.baseUrl}auth/refresh`, {
-        refreshToken,
-      })
+      .post<LoginResponse>(`${environment.baseUrl}users/refresh-token`, request)
       .pipe(
         tap((response) => {
-          this.setAuthData(
-            response.token,
-            response.user,
-            response.refreshToken
-          );
-          this.updateAuthState({
-            user: response.user,
-            token: response.token,
-            isLoading: false,
-            error: null,
-          });
+          if (response.success && response.data) {
+            const user: User = {
+              id: response.data.id,
+              firstName: response.data.firstName,
+              lastName: response.data.lastName,
+              email: response.data.email,
+              roles: response.data.roles,
+            };
+            this.setAuthData(
+              response.data.token,
+              user,
+              response.data.refreshToken
+            );
+            this.updateAuthState({
+              user,
+              token: response.data.token,
+              isLoading: false,
+              error: null,
+            });
+          }
         }),
         catchError((error) => this.handleError(error))
       );
   }
 
   getCurrentUser(): Observable<User> {
-    return this.http.get<User>(`${environment.baseUrl}auth/me`).pipe(
-      tap((user) => {
-        this.updateAuthState({
-          ...this.authState(),
-          user,
-        });
-        localStorage.setItem('user', JSON.stringify(user));
+    return this.http.get<any>(`${environment.baseUrl}users/profile`).pipe(
+      tap((response) => {
+        if (response.success && response.data) {
+          const user: User = {
+            id: response.data.id,
+            firstName: response.data.firstName,
+            lastName: response.data.lastName,
+            email: response.data.email,
+            roles: response.data.roles || [],
+          };
+          this.updateAuthState({
+            ...this.authState(),
+            user,
+          });
+          localStorage.setItem('user', JSON.stringify(user));
+        }
       }),
       catchError((error) => this.handleError(error))
     );
@@ -195,12 +225,18 @@ export class AuthService {
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'An error occurred';
 
-    if (error.error instanceof ErrorEvent) {
+    if (error.status === 0) {
+      // Error de red o backend no disponible
+      errorMessage =
+        'Cannot connect to server. Please ensure the backend is running on localhost:7260';
+    } else if (error.error instanceof ErrorEvent) {
       // Client-side error
       errorMessage = error.error.message;
     } else {
       // Server-side error
-      if (error.error?.message) {
+      if (error.error?.errorMessage) {
+        errorMessage = error.error.errorMessage;
+      } else if (error.error?.message) {
         errorMessage = error.error.message;
       } else if (error.error?.errors) {
         // Handle validation errors
@@ -210,6 +246,13 @@ export class AuthService {
         errorMessage = `Error ${error.status}: ${error.statusText}`;
       }
     }
+
+    console.error('HTTP Error:', {
+      status: error.status,
+      statusText: error.statusText,
+      url: error.url,
+      error: error.error,
+    });
 
     this.updateAuthState({
       ...this.authState(),

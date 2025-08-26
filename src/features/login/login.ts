@@ -48,13 +48,15 @@ export class Login {
       };
 
       this.authService.login(credentials).subscribe({
-        next: () => {
-          // Redirigir según el rol
-          const user = this.authService.user();
-          if (user?.role === 'admin') {
-            this.router.navigate(['/admin']);
-          } else {
-            this.router.navigate(['/']);
+        next: (response) => {
+          if (response.success) {
+            // Redirigir según el rol
+            const user = this.authService.user();
+            if (user?.roles?.includes('admin')) {
+              this.router.navigate(['/admin']);
+            } else {
+              this.router.navigate(['/']);
+            }
           }
         },
         error: (error) => {
