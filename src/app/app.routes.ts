@@ -1,3 +1,39 @@
 import { Routes } from '@angular/router';
+import { adminGuard, authGuard } from '../core/guards/auth.guard';
+import { Login } from '../features/login/login';
+import { Register } from '../features/register/register';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+  {
+    path: '',
+    redirectTo: '/home',
+    pathMatch: 'full',
+  },
+  {
+    path: 'home',
+    loadComponent: () => import('../features/home/home').then((m) => m.Home),
+  },
+  {
+    path: 'login',
+    component: Login,
+  },
+  {
+    path: 'register',
+    component: Register,
+  },
+  {
+    path: 'admin',
+    loadComponent: () => import('../features/admin/admin').then((m) => m.Admin),
+    canActivate: [adminGuard],
+  },
+  {
+    path: 'my-account',
+    loadComponent: () =>
+      import('../features/customer/customer').then((m) => m.Customer),
+    canActivate: [authGuard],
+  },
+  {
+    path: '**',
+    redirectTo: '/home',
+  },
+];

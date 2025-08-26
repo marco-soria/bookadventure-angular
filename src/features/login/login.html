@@ -1,0 +1,176 @@
+<div class="min-h-screen bg-base-200 flex items-center justify-center p-4">
+  <div class="card w-full max-w-md bg-base-100 shadow-xl">
+    <div class="card-body">
+      <!-- Header -->
+      <div class="text-center mb-6">
+        <h1 class="text-3xl font-bold text-primary">Welcome Back</h1>
+        <p class="text-base-content/70 mt-2">
+          Sign in to your Book Adventure account
+        </p>
+      </div>
+
+      <!-- Error Alert -->
+      @if (error()) {
+      <div class="alert alert-error mb-4">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="stroke-current shrink-0 h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        <span>{{ error() }}</span>
+        <button class="btn btn-sm btn-ghost" (click)="clearError()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+      }
+
+      <!-- Login Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <!-- Email Field -->
+        <div class="form-control w-full mb-4">
+          <label class="label">
+            <span class="label-text font-medium">Email</span>
+          </label>
+          <input
+            type="email"
+            placeholder="Enter your email"
+            class="input input-bordered w-full"
+            [class.input-error]="email?.invalid && email?.touched"
+            formControlName="email"
+          />
+          @if (email?.invalid && email?.touched) {
+          <label class="label">
+            @if (email?.errors?.['required']) {
+            <span class="label-text-alt text-error">Email is required</span>
+            } @if (email?.errors?.['email']) {
+            <span class="label-text-alt text-error"
+              >Please enter a valid email</span
+            >
+            }
+          </label>
+          }
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-control w-full mb-6">
+          <label class="label">
+            <span class="label-text font-medium">Password</span>
+          </label>
+          <div class="relative">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              placeholder="Enter your password"
+              class="input input-bordered w-full pr-12"
+              [class.input-error]="password?.invalid && password?.touched"
+              formControlName="password"
+            />
+            <button
+              type="button"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center"
+              (click)="togglePasswordVisibility()"
+            >
+              @if (showPassword()) {
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                />
+              </svg>
+              } @else {
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.543 7-1.274 4.057-5.065 7-9.543 7-4.477 0-8.268-2.943-9.542-7z"
+                />
+              </svg>
+              }
+            </button>
+          </div>
+          @if (password?.invalid && password?.touched) {
+          <label class="label">
+            @if (password?.errors?.['required']) {
+            <span class="label-text-alt text-error">Password is required</span>
+            } @if (password?.errors?.['minlength']) {
+            <span class="label-text-alt text-error"
+              >Password must be at least 6 characters</span
+            >
+            }
+          </label>
+          }
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="btn btn-primary w-full"
+          [disabled]="isLoading()"
+        >
+          @if (isLoading()) {
+          <span class="loading loading-spinner loading-sm"></span>
+          Signing in... } @else { Sign In }
+        </button>
+      </form>
+
+      <!-- Divider -->
+      <div class="divider mt-6">Or</div>
+
+      <!-- Register Link -->
+      <div class="text-center">
+        <p class="text-base-content/70">
+          Don't have an account?
+          <a routerLink="/register" class="link link-primary font-medium"
+            >Create one</a
+          >
+        </p>
+      </div>
+
+      <!-- Back to Home -->
+      <div class="text-center mt-4">
+        <a routerLink="/" class="link link-neutral text-sm">← Back to Home</a>
+      </div>
+    </div>
+  </div>
+</div>

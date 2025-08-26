@@ -1,15 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-
-// Interfaces para tipado
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'admin' | 'user';
-}
+import { AuthService } from '../../core/services/auth-service';
 
 @Component({
   selector: 'app-navbar',
@@ -18,20 +11,21 @@ interface User {
   styleUrl: './navbar.css',
 })
 export class Navbar {
+  private authService = inject(AuthService);
+
   // Signals para estado reactivo
-  isAuthenticated = signal(false);
-  currentUser = signal<User | null>(null);
   searchQuery = signal('');
   isUserMenuOpen = signal(false);
   currentTheme = signal<'cupcake' | 'dark'>('cupcake');
 
-  // Computed signals
-  isAdmin = computed(() => this.currentUser()?.role === 'admin');
+  // Auth computed signals from service
+  isAuthenticated = this.authService.isAuthenticated;
+  currentUser = this.authService.user;
+  isAdmin = this.authService.isAdmin;
   userName = computed(() => this.currentUser()?.name || '');
 
   constructor() {
     this.initializeTheme();
-    this.checkAuthStatus();
   }
 
   // Inicializar tema según preferencia del sistema o localStorage
@@ -67,22 +61,6 @@ export class Navbar {
       });
   }
 
-  // Simular verificación de autenticación (reemplazar con servicio real)
-  checkAuthStatus() {
-    // TODO: Implementar con servicio de autenticación real
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      this.isAuthenticated.set(true);
-      // TODO: Obtener datos del usuario desde el backend
-      this.currentUser.set({
-        id: '1',
-        name: 'Marco Antonio',
-        email: 'marco@example.com',
-        role: 'admin', // Cambiar por 'user' para probar vista de usuario normal
-      });
-    }
-  }
-
   // Métodos de navegación
   onSearch() {
     const query = this.searchQuery();
@@ -97,11 +75,8 @@ export class Navbar {
   }
 
   onLogout() {
-    this.isAuthenticated.set(false);
-    this.currentUser.set(null);
-    localStorage.removeItem('authToken');
-    console.log('User logged out');
-    // TODO: Navegar a home
+    this.authService.logout();
+    this.closeUserMenu();
   }
 
   // Toggle user menu dropdown
