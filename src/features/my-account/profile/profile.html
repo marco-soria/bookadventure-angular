@@ -1,0 +1,250 @@
+<div class="card bg-base-100 shadow-xl">
+  <div class="card-body">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="card-title text-2xl">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 mr-2"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+          />
+        </svg>
+        Profile Information
+      </h2>
+      <button class="btn btn-outline btn-sm" (click)="toggleEditMode()">
+        @if (isEditing()) { × } @else {
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4 mr-1"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+          />
+        </svg>
+        Edit }
+      </button>
+    </div>
+
+    @if (customerProfile()) {
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Avatar Section -->
+      <div class="flex flex-col items-center space-y-4">
+        <div class="avatar placeholder">
+          <div
+            class="bg-primary text-primary-content rounded-full w-24 h-24"
+            style="display: flex; align-items: center; justify-content: center"
+          >
+            <span
+              class="text-3xl font-bold"
+              style="line-height: 1; display: block"
+              >{{ customerProfile()!.firstName.charAt(0) }}</span
+            >
+          </div>
+        </div>
+        <div class="text-center">
+          <h3 class="text-xl font-semibold">
+            {{ customerProfile()!.fullName }}
+          </h3>
+          <p class="text-base-content/70">{{ customerProfile()!.email }}</p>
+          <div class="mt-2">
+            <span class="badge badge-primary badge-sm mr-1">{{
+              customerProfile()!.status
+            }}</span>
+            @if (user()) { @for (role of user()!.roles; track role) {
+            <span class="badge badge-secondary badge-sm mr-1">{{ role }}</span>
+            } }
+          </div>
+          <div class="mt-3 text-sm text-base-content/60">
+            <p>Total Orders: {{ customerProfile()!.totalRentalOrders }}</p>
+            <p>Active Books: {{ customerProfile()!.activeRentals }}</p>
+            @if (customerProfile()!.overdueRentals > 0) {
+            <p class="text-error">
+              Overdue Books: {{ customerProfile()!.overdueRentals }}
+            </p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Section -->
+      <div class="w-full max-w-lg">
+        <div class="space-y-6">
+          <!-- First Name -->
+          <div class="form-control w-full">
+            <label class="label pb-2">
+              <span class="label-text font-medium">First Name</span>
+            </label>
+            @if (isEditing()) {
+            <input
+              type="text"
+              class="input input-bordered h-12 w-full"
+              [(ngModel)]="editForm().firstName"
+              placeholder="Enter your first name"
+            />
+            } @else {
+            <div
+              class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center w-full"
+            >
+              {{ customerProfile()!.firstName }}
+            </div>
+            }
+          </div>
+
+          <!-- Last Name -->
+          <div class="form-control w-full">
+            <label class="label pb-2">
+              <span class="label-text font-medium">Last Name</span>
+            </label>
+            @if (isEditing()) {
+            <input
+              type="text"
+              class="input input-bordered h-12 w-full"
+              [(ngModel)]="editForm().lastName"
+              placeholder="Enter your last name"
+            />
+            } @else {
+            <div
+              class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center w-full"
+            >
+              {{ customerProfile()!.lastName }}
+            </div>
+            }
+          </div>
+
+          <!-- Email (Always read-only) -->
+          <div class="form-control w-full">
+            <label class="label pb-2">
+              <span class="label-text font-medium">Email</span>
+            </label>
+            <div
+              class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center text-base-content/70 w-full"
+            >
+              {{ customerProfile()!.email }}
+            </div>
+            <label class="label pt-1">
+              <span class="label-text-alt text-base-content/50"
+                >Email cannot be changed</span
+              >
+            </label>
+          </div>
+
+          <!-- DNI (Always read-only) -->
+          <div class="form-control w-full">
+            <label class="label pb-2">
+              <span class="label-text font-medium">Document ID (DNI)</span>
+            </label>
+            <div
+              class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center text-base-content/70 w-full"
+            >
+              {{ customerProfile()!.dni }}
+            </div>
+            <label class="label pt-1">
+              <span class="label-text-alt text-base-content/50"
+                >Document ID cannot be changed</span
+              >
+            </label>
+          </div>
+
+          <!-- Age -->
+          <div class="form-control w-full">
+            <label class="label pb-2">
+              <span class="label-text font-medium">Age</span>
+            </label>
+            @if (isEditing()) {
+            <input
+              type="number"
+              class="input input-bordered h-12 w-full"
+              [(ngModel)]="editForm().age"
+              min="1"
+              max="120"
+              placeholder="Enter your age"
+            />
+            } @else {
+            <div
+              class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center w-full"
+            >
+              {{ customerProfile()!.age }}
+            </div>
+            }
+          </div>
+
+          <!-- Phone Number -->
+          <div class="form-control w-full">
+            <label class="label pb-2">
+              <span class="label-text font-medium">Phone Number</span>
+            </label>
+            @if (isEditing()) {
+            <input
+              type="tel"
+              class="input input-bordered h-12 w-full"
+              [(ngModel)]="editForm().phoneNumber"
+              placeholder="Enter your phone number (optional)"
+            />
+            } @else {
+            <div
+              class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center w-full"
+            >
+              {{ customerProfile()!.phoneNumber || "Not provided" }}
+            </div>
+            }
+          </div>
+
+          @if (isEditing()) {
+          <div class="flex flex-col sm:flex-row gap-3 pt-6 w-full">
+            <button class="btn btn-primary h-12 flex-1" (click)="saveProfile()">
+              Save Changes
+            </button>
+            <button
+              class="btn btn-outline h-12 sm:w-auto w-full"
+              (click)="toggleEditMode()"
+            >
+              Cancel
+            </button>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+    } @else if (isLoadingUser()) {
+    <div class="text-center py-8">
+      <div class="loading loading-spinner loading-lg"></div>
+      <p class="mt-4 text-base-content/70">Loading profile...</p>
+    </div>
+    } @else if (userError()) {
+    <div class="alert alert-error">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="stroke-current shrink-0 h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span>{{ userError() }}</span>
+    </div>
+    } @else {
+    <div class="text-center py-8">
+      <div class="loading loading-spinner loading-lg"></div>
+      <p class="mt-4 text-base-content/70">Loading profile...</p>
+    </div>
+    }
+  </div>
+</div>

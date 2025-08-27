@@ -1,0 +1,48 @@
+/* Custom styles for rentals component */
+
+.card {
+  transition: box-shadow 200ms ease;
+}
+
+.card:hover {
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+}
+
+.collapse {
+  transition: all 200ms ease;
+}
+
+.badge-success {
+  background-color: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.badge-info {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.badge-error {
+  background-color: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
+
+.badge-warning {
+  background-color: #f59e0b;
+  color: white;
+  border-color: #f59e0b;
+}
+
+.badge-neutral {
+  background-color: #6b7280;
+  color: white;
+  border-color: #6b7280;
+}
+
+/* Loading spinner customization */
+.loading-spinner {
+  color: hsl(var(--p));
+}
