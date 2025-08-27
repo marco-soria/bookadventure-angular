@@ -27,6 +27,7 @@ export class RentalsManagement implements OnInit {
   showDetailModal = signal<boolean>(false);
   editingItem = signal<RentalOrder | null>(null);
   selectedRentalDetails = signal<RentalOrder | null>(null);
+  bookSearchTerm = signal<string>('');
 
   // Formulario
   form = signal<RentalForm>({
@@ -38,13 +39,26 @@ export class RentalsManagement implements OnInit {
   });
 
   // Computed properties
-  filteredRentals = computed(() =>
-    this.rentals().filter((rental) => rental.status === 'Active')
-  );
+  filteredRentals = computed(() => this.rentals()); // Show all rentals (active and deleted)
 
   filteredBooks = computed(() =>
     this.books().filter((book) => book.status && book.isAvailable)
   );
+
+  filteredBooksWithSearch = computed(() => {
+    const searchTerm = this.bookSearchTerm().toLowerCase();
+    if (!searchTerm) {
+      return this.filteredBooks();
+    }
+
+    return this.filteredBooks().filter(
+      (book) =>
+        book.title.toLowerCase().includes(searchTerm) ||
+        book.author.toLowerCase().includes(searchTerm) ||
+        book.isbn.toLowerCase().includes(searchTerm) ||
+        book.genreName.toLowerCase().includes(searchTerm)
+    );
+  });
 
   async ngOnInit() {
     await this.loadData();
@@ -98,11 +112,15 @@ export class RentalsManagement implements OnInit {
   openForm(rental?: RentalOrder) {
     if (rental) {
       this.editingItem.set(rental);
+      // For editing, populate with existing data
       this.form.set({
         customerId: rental.customerId,
-        rentalDays: 7,
-        notes: '',
-        bookIds: [],
+        rentalDays:
+          rental.details && rental.details.length > 0
+            ? rental.details[0].rentalDays
+            : 7,
+        notes: rental.notes || '',
+        bookIds: rental.details ? rental.details.map((d) => d.bookId) : [],
         allowPartialOrder: false,
       });
     } else {
@@ -115,6 +133,7 @@ export class RentalsManagement implements OnInit {
         allowPartialOrder: false,
       });
     }
+    this.bookSearchTerm.set('');
     this.showForm.set(true);
   }
 
@@ -200,8 +219,12 @@ export class RentalsManagement implements OnInit {
   }
 
   // Helper methods for display
-  getOrderStatusClass(orderStatus: string): string {
-    switch (orderStatus?.toLowerCase()) {
+  getOrderStatusClass(rental: RentalOrder): string {
+    if (this.isDeleted(rental)) {
+      return 'badge-error';
+    }
+
+    switch (rental.orderStatus?.toLowerCase()) {
       case 'pending':
         return 'badge-warning';
       case 'active':
@@ -217,8 +240,12 @@ export class RentalsManagement implements OnInit {
     }
   }
 
-  formatOrderStatus(orderStatus: string): string {
-    switch (orderStatus?.toLowerCase()) {
+  formatOrderStatus(rental: RentalOrder): string {
+    if (this.isDeleted(rental)) {
+      return 'Deleted';
+    }
+
+    switch (rental.orderStatus?.toLowerCase()) {
       case 'pending':
         return 'Pending';
       case 'active':
@@ -230,8 +257,31 @@ export class RentalsManagement implements OnInit {
       case 'cancelled':
         return 'Cancelled';
       default:
-        return orderStatus || 'Unknown';
+        return rental.orderStatus || 'Unknown';
     }
+  }
+
+  isDeleted(rental: RentalOrder): boolean {
+    return (
+      rental.status === 'Deleted' ||
+      rental.status === 'deleted' ||
+      (typeof rental.status === 'number' && rental.status === 2)
+    );
+  }
+
+  canEdit(rental: RentalOrder): boolean {
+    return (
+      !this.isDeleted(rental) &&
+      (rental.orderStatus === 'Active' || rental.orderStatus === 'Pending')
+    );
+  }
+
+  canDelete(rental: RentalOrder): boolean {
+    return !this.isDeleted(rental) && rental.orderStatus !== 'Cancelled';
+  }
+
+  canRestore(rental: RentalOrder): boolean {
+    return this.isDeleted(rental);
   }
 
   isOrderCompletelyReturned(rental: RentalOrder): boolean {
@@ -244,23 +294,49 @@ export class RentalsManagement implements OnInit {
 
   async save() {
     const formData = this.form();
-    if (!formData.customerId || formData.bookIds.length === 0) {
-      this.adminService.showError(
-        'Please select a customer and at least one book'
-      );
+    const editing = this.editingItem();
+
+    console.log('Saving rental:', { formData, editing: !!editing });
+
+    if (!this.isFormValid()) {
+      if (editing) {
+        this.adminService.showError('Please enter valid rental days (1-365)');
+      } else {
+        this.adminService.showError(
+          'Please select a customer and at least one book'
+        );
+      }
       return;
     }
 
     this.isLoading.set(true);
     try {
-      const editing = this.editingItem();
       let response: any;
 
       if (editing) {
-        response = await this.adminService.updateRental(editing.id, formData);
+        // For editing, only send the fields that can be updated
+        const updateData = {
+          customerId: formData.customerId,
+          rentalDays: formData.rentalDays,
+          notes: formData.notes || null,
+          bookIds: formData.bookIds.length > 0 ? formData.bookIds : null,
+        };
+        console.log('Updating rental with data:', updateData);
+        response = await this.adminService.updateRental(editing.id, updateData);
       } else {
-        response = await this.adminService.createRental(formData);
+        // For creating, send all required fields
+        const createData = {
+          customerId: formData.customerId,
+          rentalDays: formData.rentalDays,
+          notes: formData.notes || null,
+          bookIds: formData.bookIds,
+          allowPartialOrder: formData.allowPartialOrder,
+        };
+        console.log('Creating rental with data:', createData);
+        response = await this.adminService.createRental(createData);
       }
+
+      console.log('Rental operation response:', response);
 
       if (response && response.success) {
         this.adminService.showSuccess(
@@ -270,12 +346,15 @@ export class RentalsManagement implements OnInit {
         this.closeForm();
       } else {
         this.adminService.showError(
-          response?.errorMessage || 'Error saving rental'
+          response?.errorMessage ||
+            `Error ${editing ? 'updating' : 'creating'} rental`
         );
       }
     } catch (error) {
       console.error('Error saving rental:', error);
-      this.adminService.showError('Error saving rental');
+      this.adminService.showError(
+        `Error ${editing ? 'updating' : 'creating'} rental`
+      );
     } finally {
       this.isLoading.set(false);
     }
@@ -307,20 +386,67 @@ export class RentalsManagement implements OnInit {
 
   toggleBookSelection(bookId: number, event: any) {
     const isChecked = event.target.checked;
-    const currentBookIds = this.form().bookIds;
+    const currentForm = this.form();
+    const currentBookIds = [...currentForm.bookIds];
 
     if (isChecked) {
       if (!currentBookIds.includes(bookId)) {
         this.form.set({
-          ...this.form(),
+          ...currentForm,
           bookIds: [...currentBookIds, bookId],
         });
       }
     } else {
       this.form.set({
-        ...this.form(),
+        ...currentForm,
         bookIds: currentBookIds.filter((id) => id !== bookId),
       });
     }
+  }
+
+  // New methods for improved book selection
+  onBookSearch() {
+    // The computed property will automatically filter
+    // This method can be used for additional logic if needed
+  }
+
+  removeBook(bookId: number) {
+    const currentForm = this.form();
+    const currentBookIds = [...currentForm.bookIds];
+    this.form.set({
+      ...currentForm,
+      bookIds: currentBookIds.filter((id) => id !== bookId),
+    });
+  }
+
+  getBookTitle(bookId: number): string {
+    const book = this.books().find((b) => b.id === bookId);
+    return book ? `${book.title} by ${book.author}` : 'Unknown Book';
+  }
+
+  isFormValid(): boolean {
+    const formData = this.form();
+    const editing = this.editingItem();
+
+    if (editing) {
+      // For editing, only require rental days and notes are optional
+      return formData.rentalDays > 0 && formData.rentalDays <= 365;
+    } else {
+      // For creating, require customer and at least one book
+      return (
+        formData.customerId > 0 &&
+        formData.bookIds.length > 0 &&
+        formData.rentalDays > 0 &&
+        formData.rentalDays <= 365
+      );
+    }
+  }
+
+  updateFormField(field: keyof RentalForm, value: any) {
+    const currentForm = this.form();
+    this.form.set({
+      ...currentForm,
+      [field]: value,
+    });
   }
 }

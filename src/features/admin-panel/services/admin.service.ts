@@ -292,31 +292,100 @@ export class AdminService {
   }
 
   async createRental(rental: any) {
-    const response = await firstValueFrom(
-      this.http.post<any>(`${this.baseUrl}rentalorders`, rental)
-    );
-    return response;
+    try {
+      const response = await firstValueFrom(
+        this.http.post<any>(`${this.baseUrl}rentalorders`, rental)
+      );
+      return response;
+    } catch (error: any) {
+      console.error('Error creating rental:', error);
+      let errorMessage = 'Error creating rental order';
+
+      if (error.status === 401) {
+        errorMessage = 'Unauthorized: Please check your login status';
+      } else if (error.status === 403) {
+        errorMessage =
+          'Forbidden: You do not have permission to create rental orders';
+      } else if (error.error?.errorMessage) {
+        errorMessage = error.error.errorMessage;
+      }
+
+      return {
+        success: false,
+        errorMessage: errorMessage,
+      };
+    }
   }
 
   async updateRental(id: number, rental: any) {
-    const response = await firstValueFrom(
-      this.http.put<any>(`${this.baseUrl}rentalorders/${id}`, rental)
-    );
-    return response;
+    try {
+      const response = await firstValueFrom(
+        this.http.put<any>(`${this.baseUrl}rentalorders/${id}`, rental)
+      );
+      return response;
+    } catch (error: any) {
+      console.error('Error updating rental:', error);
+      let errorMessage = 'Error updating rental order';
+
+      if (error.status === 401) {
+        errorMessage = 'Unauthorized: Please check your login status';
+      } else if (error.status === 403) {
+        errorMessage =
+          'Forbidden: You do not have permission to update rental orders';
+      } else if (error.status === 404) {
+        errorMessage = 'Rental order not found';
+      } else if (error.error?.errorMessage) {
+        errorMessage = error.error.errorMessage;
+      }
+
+      return {
+        success: false,
+        errorMessage: errorMessage,
+      };
+    }
   }
 
   async deleteRental(id: number) {
-    const response = await firstValueFrom(
-      this.http.delete<any>(`${this.baseUrl}rentalorders/${id}`)
-    );
-    return response;
+    try {
+      const response = await firstValueFrom(
+        this.http.delete<any>(`${this.baseUrl}rentalorders/${id}`)
+      );
+      return response;
+    } catch (error: any) {
+      console.error('Error deleting rental:', error);
+      let errorMessage = 'Error deleting rental order';
+
+      if (error.status === 401) {
+        errorMessage = 'Unauthorized: Please check your login status';
+      } else if (error.status === 403) {
+        errorMessage =
+          'Forbidden: You do not have permission to delete rental orders';
+      } else if (error.status === 404) {
+        errorMessage = 'Rental order not found';
+      } else if (error.error?.errorMessage) {
+        errorMessage = error.error.errorMessage;
+      }
+
+      return {
+        success: false,
+        errorMessage: errorMessage,
+      };
+    }
   }
 
   async restoreRental(id: number) {
-    const response = await firstValueFrom(
-      this.http.put<any>(`${this.baseUrl}rentalorders/${id}/restore`, {})
-    );
-    return response;
+    try {
+      const response = await firstValueFrom(
+        this.http.put<any>(`${this.baseUrl}rentalorders/${id}/restore`, {})
+      );
+      return response;
+    } catch (error) {
+      console.error('Error restoring rental:', error);
+      return {
+        success: false,
+        errorMessage: 'Error restoring rental order',
+      };
+    }
   }
 
   async getRentalDetails(id: number) {

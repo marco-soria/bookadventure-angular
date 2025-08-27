@@ -39,9 +39,9 @@
           <th>Customer</th>
           <th>Order Date</th>
           <th>Due Date</th>
-          <th>Return Date</th>
           <th>Status</th>
-          <th>Books Count</th>
+          <th>Books</th>
+          <th>Progress</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -56,22 +56,8 @@
             {{ rental.dueDate ? (rental.dueDate | date : "short") : "N/A" }}
           </td>
           <td>
-            @if (rental.returnDate) {
-            <span class="text-success">{{
-              rental.returnDate | date : "short"
-            }}</span>
-            } @else if (isOrderCompletelyReturned(rental)) {
-            <span class="text-success">All Returned</span>
-            } @else {
-            <span class="text-warning">Not Returned</span>
-            }
-          </td>
-          <td>
-            <div
-              class="badge"
-              [class]="getOrderStatusClass(rental.orderStatus)"
-            >
-              {{ formatOrderStatus(rental.orderStatus) }}
+            <div class="badge" [class]="getOrderStatusClass(rental)">
+              {{ formatOrderStatus(rental) }}
             </div>
           </td>
           <td>
@@ -80,7 +66,26 @@
             </span>
           </td>
           <td>
+            <div class="flex items-center gap-2">
+              @if (rental.details && rental.details.length > 0) {
+              <div class="text-sm">
+                {{ rental.returnedBooks || 0 }}/{{
+                  rental.totalBooks || rental.details.length
+                }}
+              </div>
+              <progress
+                class="progress progress-primary w-16"
+                [value]="rental.returnedBooks || 0"
+                [max]="rental.totalBooks || rental.details.length"
+              ></progress>
+              } @else {
+              <span class="text-xs text-base-content/50">No books</span>
+              }
+            </div>
+          </td>
+          <td>
             <div class="flex gap-2">
+              <!-- Details button - always available -->
               <button
                 class="btn btn-sm btn-info"
                 title="View Details"
@@ -107,6 +112,9 @@
                 </svg>
                 Details
               </button>
+
+              <!-- Edit button - only for non-deleted orders -->
+              @if (canEdit(rental)) {
               <button
                 class="btn btn-sm btn-warning"
                 title="Edit Rental"
@@ -127,6 +135,10 @@
                 </svg>
                 Edit
               </button>
+              }
+
+              <!-- Restore button - only for deleted orders -->
+              @if (canRestore(rental)) {
               <button
                 class="btn btn-sm btn-success"
                 title="Restore Rental"
@@ -147,6 +159,10 @@
                 </svg>
                 Restore
               </button>
+              }
+
+              <!-- Delete button - only for non-deleted orders -->
+              @if (canDelete(rental)) {
               <button class="btn btn-sm btn-error" (click)="delete(rental.id)">
                 <svg
                   class="w-4 h-4"
@@ -163,6 +179,7 @@
                 </svg>
                 Delete
               </button>
+              }
             </div>
           </td>
         </tr>
@@ -180,19 +197,21 @@
   @if (showForm()) {
   <dialog class="modal modal-open">
     <div class="modal-box bg-base-100 max-w-4xl">
-      <h3 class="font-bold text-lg mb-4 text-base-content">
+      <h3 class="font-bold text-lg mb-6 text-base-content">
         {{ editingItem() ? "Edit Rental Order" : "Add New Rental Order" }}
       </h3>
 
-      <div class="space-y-4">
-        <!-- Customer Selection -->
-        <div class="form-control">
+      <form class="space-y-4">
+        <!-- Customer Selection - Only for new rentals -->
+        @if (!editingItem()) {
+        <div class="form-control w-full">
           <label class="label">
-            <span class="label-text">Customer *</span>
+            <span class="label-text font-semibold">Customer *</span>
           </label>
           <select
             class="select select-bordered w-full"
-            [(ngModel)]="form().customerId"
+            [value]="form().customerId"
+            (change)="updateFormField('customerId', +$any($event.target).value)"
           >
             <option value="0">Select a customer</option>
             @for (customer of customers(); track customer.id) {
@@ -203,77 +222,210 @@
             </option>
             }
           </select>
+          <label class="label">
+            <span class="label-text-alt"
+              >Choose the customer for this rental order</span
+            >
+          </label>
         </div>
+        } @else {
+        <!-- Show customer info for editing -->
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text font-semibold">Customer</span>
+          </label>
+          <div class="input input-bordered bg-base-200 flex items-center">
+            {{ editingItem()!.customerName }} ({{ editingItem()!.customerDNI }})
+          </div>
+          <label class="label">
+            <span class="label-text-alt"
+              >Customer cannot be changed when editing</span
+            >
+          </label>
+        </div>
+        }
 
         <!-- Rental Days -->
-        <div class="form-control">
+        <div class="form-control w-full">
           <label class="label">
-            <span class="label-text">Rental Days *</span>
+            <span class="label-text font-semibold">Rental Days *</span>
           </label>
           <input
             type="number"
             min="1"
             max="365"
-            class="input input-bordered"
-            [(ngModel)]="form().rentalDays"
+            class="input input-bordered w-full"
+            [value]="form().rentalDays"
+            (input)="updateFormField('rentalDays', +$any($event.target).value)"
+            placeholder="Enter number of days (1-365)"
           />
+          <label class="label">
+            <span class="label-text-alt">How many days to rent the books</span>
+          </label>
         </div>
 
         <!-- Notes -->
-        <div class="form-control">
+        <div class="form-control w-full">
           <label class="label">
-            <span class="label-text">Notes</span>
+            <span class="label-text font-semibold">Notes</span>
           </label>
           <textarea
-            class="textarea textarea-bordered"
+            class="textarea textarea-bordered w-full"
             rows="3"
             maxlength="500"
-            [(ngModel)]="form().notes"
+            [value]="form().notes || ''"
+            (input)="updateFormField('notes', $any($event.target).value)"
             placeholder="Optional notes for this rental order"
-          >
-          </textarea>
+          ></textarea>
+          <label class="label">
+            <span class="label-text-alt"
+              >Optional notes (max 500 characters)</span
+            >
+          </label>
         </div>
 
-        <!-- Book Selection -->
-        <div class="form-control">
+        <!-- Book Selection - Only for new rentals -->
+        @if (!editingItem()) {
+        <div class="form-control w-full">
           <label class="label">
-            <span class="label-text">Books to Rent *</span>
+            <span class="label-text font-semibold">Books to Rent *</span>
           </label>
-          <div class="space-y-2 max-h-48 overflow-y-auto">
-            @for (book of filteredBooks(); track book.id) {
-            <label class="cursor-pointer label justify-start">
+
+          <!-- Search input for books -->
+          <input
+            type="text"
+            class="input input-bordered w-full mb-3"
+            placeholder="Search books by title, author, or ISBN..."
+            [value]="bookSearchTerm()"
+            (input)="bookSearchTerm.set($any($event.target).value)"
+          />
+
+          <!-- Selected books display -->
+          @if (form().bookIds.length > 0) {
+          <div class="mb-3">
+            <div class="text-sm font-medium mb-2">
+              Selected Books ({{ form().bookIds.length }}):
+            </div>
+            <div class="flex flex-wrap gap-2">
+              @for (bookId of form().bookIds; track bookId) {
+              <div class="badge badge-primary gap-2">
+                {{ getBookTitle(bookId) }}
+                <button
+                  class="btn btn-xs btn-circle btn-ghost"
+                  (click)="removeBook(bookId)"
+                >
+                  ✕
+                </button>
+              </div>
+              }
+            </div>
+          </div>
+          }
+
+          <!-- Available books list -->
+          <div
+            class="max-h-48 overflow-y-auto border border-base-300 rounded-lg bg-base-100"
+          >
+            @for (book of filteredBooksWithSearch(); track book.id) {
+            <label
+              class="cursor-pointer flex items-center p-3 hover:bg-base-200 border-b border-base-300 last:border-b-0"
+            >
               <input
                 type="checkbox"
                 class="checkbox checkbox-primary mr-3"
                 [checked]="form().bookIds.includes(book.id)"
                 (change)="toggleBookSelection(book.id, $event)"
               />
-              <span class="label-text"
-                >{{ book.title }} by {{ book.author }} ({{ book.isbn }})</span
-              >
+              <div class="flex-1">
+                <div class="font-medium">{{ book.title }}</div>
+                <div class="text-sm text-base-content/70">
+                  by {{ book.author }} • ISBN: {{ book.isbn }}
+                </div>
+                <div class="text-xs text-base-content/50">
+                  Stock: {{ book.stock }} • Genre: {{ book.genreName }}
+                </div>
+              </div>
             </label>
+            } @empty {
+            <div class="p-3 text-center text-base-content/70">
+              @if (bookSearchTerm()) { No books found matching "{{
+                bookSearchTerm()
+              }}" } @else { No available books found }
+            </div>
             }
           </div>
+          <label class="label">
+            <span class="label-text-alt">Select one or more books to rent</span>
+          </label>
         </div>
-
-        <!-- Allow Partial Order -->
-        <div class="form-control">
-          <label class="cursor-pointer label justify-start">
-            <input
-              type="checkbox"
-              class="checkbox checkbox-primary mr-3"
-              [(ngModel)]="form().allowPartialOrder"
-            />
-            <span class="label-text"
-              >Allow partial order if some books are unavailable</span
+        } @else {
+        <!-- Show current books for editing -->
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text font-semibold">Books in this Order</span>
+          </label>
+          <div class="space-y-2 p-4 bg-base-200 rounded-lg">
+            @for (detail of editingItem()!.details; track detail.id) {
+            <div
+              class="flex items-center justify-between p-2 bg-base-100 rounded"
+            >
+              <div>
+                <div class="font-medium">{{ detail.bookTitle }}</div>
+                <div class="text-sm text-base-content/70">
+                  by {{ detail.bookAuthor }}
+                </div>
+              </div>
+              <div
+                class="badge"
+                [class]="detail.isReturned ? 'badge-success' : 'badge-warning'"
+              >
+                {{ detail.isReturned ? "Returned" : "Active" }}
+              </div>
+            </div>
+            }
+          </div>
+          <label class="label">
+            <span class="label-text-alt"
+              >Books cannot be changed when editing. Use 'Details' to manage
+              returns.</span
             >
           </label>
         </div>
-      </div>
+        }
 
-      <div class="modal-action">
-        <button class="btn" (click)="closeForm()">Cancel</button>
-        <button class="btn btn-primary" (click)="save()">
+        <!-- Allow Partial Order - Only for new rentals -->
+        @if (!editingItem()) {
+        <div class="form-control w-full">
+          <label class="cursor-pointer label justify-start gap-3">
+            <input
+              type="checkbox"
+              class="checkbox checkbox-primary"
+              [checked]="form().allowPartialOrder"
+              (change)="
+                updateFormField(
+                  'allowPartialOrder',
+                  $any($event.target).checked
+                )
+              "
+            />
+            <div class="flex-1">
+              <span class="label-text font-semibold">Allow partial order</span>
+              <div class="label-text-alt">
+                Create order even if some books are unavailable
+              </div>
+            </div>
+          </label>
+        </div>
+        }
+      </form>
+
+      <div class="modal-action mt-8">
+        <button class="btn btn-ghost" (click)="closeForm()">Cancel</button>
+        <button
+          class="btn btn-primary"
+          (click)="save()"
+          [disabled]="!isFormValid()"
+        >
           {{ editingItem() ? "Update" : "Create" }} Rental
         </button>
       </div>
@@ -292,7 +444,7 @@
       @if (selectedRentalDetails()) {
       <div class="space-y-6">
         <!-- Rental Order Info -->
-        <div class="grid grid-cols-2 gap-4 p-4 bg-base-200 rounded-lg">
+        <div class="grid grid-cols-3 gap-4 p-4 bg-base-200 rounded-lg">
           <div>
             <p class="text-sm text-base-content/70">Order Number</p>
             <p class="font-semibold">
@@ -328,22 +480,29 @@
             <p class="text-sm text-base-content/70">Status</p>
             <div
               class="badge"
-              [class]="
-                getOrderStatusClass(selectedRentalDetails()!.orderStatus)
-              "
+              [class]="getOrderStatusClass(selectedRentalDetails()!)"
             >
-              {{ formatOrderStatus(selectedRentalDetails()!.orderStatus) }}
+              {{ formatOrderStatus(selectedRentalDetails()!) }}
             </div>
           </div>
           <div>
-            <p class="text-sm text-base-content/70">Return Date</p>
-            <p class="font-semibold">
-              {{
-                selectedRentalDetails()!.returnDate
-                  ? (selectedRentalDetails()!.returnDate | date : "short")
-                  : "Not returned"
-              }}
-            </p>
+            <p class="text-sm text-base-content/70">Progress</p>
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-semibold">
+                {{ selectedRentalDetails()!.returnedBooks || 0 }}/{{
+                  selectedRentalDetails()!.totalBooks ||
+                    selectedRentalDetails()!.details.length
+                }}
+              </span>
+              <progress
+                class="progress progress-primary w-20"
+                [value]="selectedRentalDetails()!.returnedBooks || 0"
+                [max]="
+                  selectedRentalDetails()!.totalBooks ||
+                  selectedRentalDetails()!.details.length
+                "
+              ></progress>
+            </div>
           </div>
         </div>
 
