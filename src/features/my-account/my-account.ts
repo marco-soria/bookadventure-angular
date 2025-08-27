@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import Swal from 'sweetalert2';
 import { AuthService } from '../../core/services/auth-service';
 import {
   CustomerProfile,
@@ -11,21 +12,51 @@ import { User } from '../../types/auth';
 
 interface RentalOrder {
   id: number;
+  orderNumber: string;
   orderDate: string;
-  expectedReturnDate?: string;
-  actualReturnDate?: string;
+  returnDate?: string;
+  dueDate: string;
+  orderStatus: string;
   notes?: string;
-  totalAmount: number;
   status: string;
-  rentalOrderDetails?: {
+  createdAt: string;
+  updatedAt?: string;
+
+  // Customer Information
+  customerId: number;
+  customerName: string;
+  customerEmail: string;
+  customerDNI: string;
+
+  // Order Details
+  details?: {
     id: number;
+    quantity: number;
+    rentalDays: number;
+    dueDate: string;
+    returnDate?: string;
+    isReturned: boolean;
+    isOverdue: boolean;
+    notes?: string;
+
+    // Book Information
     bookId: number;
     bookTitle: string;
     bookAuthor: string;
-    rentalDays: number;
-    pricePerDay: number;
-    subtotal: number;
+    bookISBN?: string;
+    bookImageUrl?: string;
+    bookGenre?: string;
+
+    // Rental Order Information
+    rentalOrderId: number;
+    rentalOrderNumber: string;
   }[];
+
+  // Summary Information
+  totalBooks: number;
+  activeBooks: number;
+  returnedBooks: number;
+  hasOverdueBooks: boolean;
 }
 
 @Component({
@@ -77,9 +108,13 @@ export class MyAccount implements OnInit {
     this.isLoadingUser.set(true);
     this.userError.set(null);
 
+    console.log('Loading customer profile...');
+
     this.userProfileService.getProfile().subscribe({
       next: (response) => {
+        console.log('Customer profile response:', response);
         if (response.success && response.data) {
+          console.log('Customer profile data:', response.data);
           this.customerProfile.set(response.data);
           this.editForm.set({
             firstName: response.data.firstName,
@@ -87,12 +122,19 @@ export class MyAccount implements OnInit {
             age: response.data.age,
             phoneNumber: response.data.phoneNumber || '',
           });
+
+          // Log the specific values that are showing as 0
+          console.log('Total Rental Orders:', response.data.totalRentalOrders);
+          console.log('Active Rentals:', response.data.activeRentals);
+          console.log('Overdue Rentals:', response.data.overdueRentals);
         } else {
+          console.error('Profile load failed:', response.errorMessage);
           this.userError.set(response.errorMessage || 'Failed to load profile');
         }
         this.isLoadingUser.set(false);
       },
       error: (error) => {
+        console.error('Profile load error:', error);
         this.userError.set(error.message || 'Failed to load profile');
         this.isLoadingUser.set(false);
       },
@@ -136,18 +178,37 @@ export class MyAccount implements OnInit {
           // Reload the profile to get updated data
           this.loadCustomerProfile();
           this.isEditing.set(false);
-          alert('Profile updated successfully!');
+          Swal.fire({
+            title: 'Success!',
+            text: 'Profile updated successfully!',
+            icon: 'success',
+            background: 'hsl(var(--b1))',
+            color: 'hsl(var(--bc))',
+            confirmButtonColor: 'hsl(var(--p))',
+          });
         } else {
-          alert(
-            'Failed to update profile: ' +
-              (response.errorMessage || 'Unknown error')
-          );
+          Swal.fire({
+            title: 'Error!',
+            text:
+              'Failed to update profile: ' +
+              (response.errorMessage || 'Unknown error'),
+            icon: 'error',
+            background: 'hsl(var(--b1))',
+            color: 'hsl(var(--bc))',
+            confirmButtonColor: 'hsl(var(--er))',
+          });
         }
       },
       error: (error) => {
-        alert(
-          'Failed to update profile: ' + (error.message || 'Unknown error')
-        );
+        Swal.fire({
+          title: 'Error!',
+          text:
+            'Failed to update profile: ' + (error.message || 'Unknown error'),
+          icon: 'error',
+          background: 'hsl(var(--b1))',
+          color: 'hsl(var(--bc))',
+          confirmButtonColor: 'hsl(var(--er))',
+        });
       },
     });
   }
@@ -183,11 +244,28 @@ export class MyAccount implements OnInit {
     });
   }
 
+  calculateTotalBooks(order: RentalOrder): number {
+    const total = order.details?.length || order.totalBooks || 0;
+    console.log(
+      `Order ${order.id} - Total books:`,
+      total,
+      'Details:',
+      order.details
+    );
+    return total;
+  }
+
   formatDate(dateString: string | null | undefined): string {
     if (!dateString) return 'Not specified';
     try {
-      return new Date(dateString).toLocaleDateString();
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
     } catch (error) {
+      console.error('Date formatting error:', error, 'for date:', dateString);
       return 'Invalid date';
     }
   }
@@ -205,9 +283,5 @@ export class MyAccount implements OnInit {
       default:
         return 'badge-neutral';
     }
-  }
-
-  calculateTotalBooks(order: RentalOrder): number {
-    return order.rentalOrderDetails?.length || 0;
   }
 }

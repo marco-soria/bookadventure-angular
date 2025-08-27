@@ -76,22 +76,7 @@
           Profile Information
         </h2>
         <button class="btn btn-outline btn-sm" (click)="toggleEditMode()">
-          @if (isEditing()) {
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 mr-1"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-          Cancel } @else {
+          @if (isEditing()) { × } @else {
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-4 w-4 mr-1"
@@ -158,145 +143,145 @@
         </div>
 
         <!-- Form Section -->
-        <div class="space-y-6">
-          <div class="form-control">
-            <label class="label pb-2">
-              <span class="label-text font-medium">First Name</span>
-            </label>
-            @if (isEditing()) {
-            <input
-              type="text"
-              class="input input-bordered h-12"
-              [(ngModel)]="editForm().firstName"
-              placeholder="Enter your first name"
-            />
-            } @else {
-            <div
-              class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center"
-            >
-              {{ customerProfile()!.firstName }}
-            </div>
-            }
-          </div>
-
-          <div class="form-control">
-            <label class="label pb-2">
-              <span class="label-text font-medium">Last Name</span>
-            </label>
-            @if (isEditing()) {
-            <input
-              type="text"
-              class="input input-bordered h-12"
-              [(ngModel)]="editForm().lastName"
-              placeholder="Enter your last name"
-            />
-            } @else {
-            <div
-              class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center"
-            >
-              {{ customerProfile()!.lastName }}
-            </div>
-            }
-          </div>
-
-          <div class="form-control">
-            <label class="label pb-2">
-              <span class="label-text font-medium">Email</span>
-            </label>
-            <div
-              class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center text-base-content/70"
-            >
-              {{ customerProfile()!.email }}
-            </div>
-            <label class="label pt-1">
-              <span class="label-text-alt text-base-content/50"
-                >Email cannot be changed</span
+        <div class="w-full max-w-lg">
+          <div class="space-y-6">
+            <!-- First Name -->
+            <div class="form-control w-full">
+              <label class="label pb-2">
+                <span class="label-text font-medium">First Name</span>
+              </label>
+              @if (isEditing()) {
+              <input
+                type="text"
+                class="input input-bordered h-12 w-full"
+                [(ngModel)]="editForm().firstName"
+                placeholder="Enter your first name"
+              />
+              } @else {
+              <div
+                class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center w-full"
               >
-            </label>
-          </div>
-
-          <div class="form-control">
-            <label class="label pb-2">
-              <span class="label-text font-medium">Document ID (DNI)</span>
-            </label>
-            <div
-              class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center text-base-content/70"
-            >
-              {{ customerProfile()!.dni }}
+                {{ customerProfile()!.firstName }}
+              </div>
+              }
             </div>
-            <label class="label pt-1">
-              <span class="label-text-alt text-base-content/50"
-                >Document ID cannot be changed</span
-              >
-            </label>
-          </div>
 
-          <div class="form-control">
-            <label class="label pb-2">
-              <span class="label-text font-medium">Age</span>
-            </label>
+            <!-- Last Name -->
+            <div class="form-control w-full">
+              <label class="label pb-2">
+                <span class="label-text font-medium">Last Name</span>
+              </label>
+              @if (isEditing()) {
+              <input
+                type="text"
+                class="input input-bordered h-12 w-full"
+                [(ngModel)]="editForm().lastName"
+                placeholder="Enter your last name"
+              />
+              } @else {
+              <div
+                class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center w-full"
+              >
+                {{ customerProfile()!.lastName }}
+              </div>
+              }
+            </div>
+
+            <!-- Email (Always read-only) -->
+            <div class="form-control w-full">
+              <label class="label pb-2">
+                <span class="label-text font-medium">Email</span>
+              </label>
+              <div
+                class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center text-base-content/70 w-full"
+              >
+                {{ customerProfile()!.email }}
+              </div>
+              <label class="label pt-1">
+                <span class="label-text-alt text-base-content/50"
+                  >Email cannot be changed</span
+                >
+              </label>
+            </div>
+
+            <!-- DNI (Always read-only) -->
+            <div class="form-control w-full">
+              <label class="label pb-2">
+                <span class="label-text font-medium">Document ID (DNI)</span>
+              </label>
+              <div
+                class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center text-base-content/70 w-full"
+              >
+                {{ customerProfile()!.dni }}
+              </div>
+              <label class="label pt-1">
+                <span class="label-text-alt text-base-content/50"
+                  >Document ID cannot be changed</span
+                >
+              </label>
+            </div>
+
+            <!-- Age -->
+            <div class="form-control w-full">
+              <label class="label pb-2">
+                <span class="label-text font-medium">Age</span>
+              </label>
+              @if (isEditing()) {
+              <input
+                type="number"
+                class="input input-bordered h-12 w-full"
+                [(ngModel)]="editForm().age"
+                min="1"
+                max="120"
+                placeholder="Enter your age"
+              />
+              } @else {
+              <div
+                class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center w-full"
+              >
+                {{ customerProfile()!.age }}
+              </div>
+              }
+            </div>
+
+            <!-- Phone Number -->
+            <div class="form-control w-full">
+              <label class="label pb-2">
+                <span class="label-text font-medium">Phone Number</span>
+              </label>
+              @if (isEditing()) {
+              <input
+                type="tel"
+                class="input input-bordered h-12 w-full"
+                [(ngModel)]="editForm().phoneNumber"
+                placeholder="Enter your phone number (optional)"
+              />
+              } @else {
+              <div
+                class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center w-full"
+              >
+                {{ customerProfile()!.phoneNumber || "Not provided" }}
+              </div>
+              }
+            </div>
+
             @if (isEditing()) {
-            <input
-              type="number"
-              class="input input-bordered h-12"
-              [(ngModel)]="editForm().age"
-              min="1"
-              max="120"
-              placeholder="Enter your age"
-            />
-            } @else {
-            <div
-              class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center"
-            >
-              {{ customerProfile()!.age }}
+            <div class="flex flex-col sm:flex-row gap-3 pt-6 w-full">
+              <button
+                class="btn btn-primary h-12 flex-1"
+                (click)="saveProfile()"
+              >
+                Save Changes
+              </button>
+              <button
+                class="btn btn-outline h-12 sm:w-auto w-full"
+                (click)="toggleEditMode()"
+              >
+                Cancel
+              </button>
             </div>
             }
           </div>
-
-          <div class="form-control">
-            <label class="label pb-2">
-              <span class="label-text font-medium">Phone Number</span>
-            </label>
-            @if (isEditing()) {
-            <input
-              type="tel"
-              class="input input-bordered h-12"
-              [(ngModel)]="editForm().phoneNumber"
-              placeholder="Enter your phone number (optional)"
-            />
-            } @else {
-            <div
-              class="input input-bordered bg-base-200 cursor-not-allowed h-12 flex items-center"
-            >
-              {{ customerProfile()!.phoneNumber || "Not provided" }}
-            </div>
-            }
-          </div>
-
-          @if (isEditing()) {
-          <div class="flex space-x-2 pt-6">
-            <button class="btn btn-primary flex-1 h-12" (click)="saveProfile()">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 mr-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              Save Changes
-            </button>
-            <button class="btn btn-outline h-12" (click)="toggleEditMode()">
-              Cancel
-            </button>
-          </div>
-          }
         </div>
       </div>
       } @else if (isLoadingUser()) {
@@ -406,12 +391,16 @@
               class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4"
             >
               <div>
-                <h3 class="text-lg font-semibold">
-                  Rental Order #{{ order.id }}
-                </h3>
+                <h3 class="text-lg font-semibold">Rental Order</h3>
                 <p class="text-sm text-base-content/70">
                   Ordered on {{ formatDate(order.orderDate) }}
                 </p>
+                @if (order.orderNumber && order.orderNumber !==
+                order.id.toString()) {
+                <p class="text-xs text-base-content/50 font-mono">
+                  Reference: {{ order.orderNumber }}
+                </p>
+                }
               </div>
               <div class="flex items-center space-x-3 mt-2 lg:mt-0">
                 <span
@@ -420,36 +409,38 @@
                 >
                   {{ order.status }}
                 </span>
-                <span class="text-lg font-bold"
-                  >${{ order.totalAmount.toFixed(2) }}</span
-                >
+                @if (order.hasOverdueBooks) {
+                <span class="badge badge-error badge-lg"> Overdue Books </span>
+                }
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div>
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4"
+            >
+              <div class="bg-base-100 p-3 rounded-lg">
                 <span class="text-sm font-medium text-base-content/70"
                   >Expected Return:</span
                 >
                 <p class="font-medium">
                   {{
-                    order.expectedReturnDate
-                      ? formatDate(order.expectedReturnDate)
-                      : "Not specified"
+                    order.dueDate ? formatDate(order.dueDate) : "Not specified"
                   }}
                 </p>
               </div>
-              @if (order.actualReturnDate) {
-              <div>
+
+              @if (order.returnDate) {
+              <div class="bg-base-100 p-3 rounded-lg">
                 <span class="text-sm font-medium text-base-content/70"
                   >Actual Return:</span
                 >
                 <p class="font-medium">
-                  {{ formatDate(order.actualReturnDate) }}
+                  {{ formatDate(order.returnDate) }}
                 </p>
               </div>
               }
-              <div>
+
+              <div class="bg-base-100 p-3 rounded-lg">
                 <span class="text-sm font-medium text-base-content/70"
                   >Total Books:</span
                 >
@@ -467,37 +458,63 @@
             }
 
             <!-- Books in Order -->
-            @if (order.rentalOrderDetails && order.rentalOrderDetails.length >
-            0) {
+            @if (order.details && order.details.length > 0) {
             <div class="collapse collapse-arrow bg-base-100">
               <input type="checkbox" />
               <div class="collapse-title text-sm font-medium">
-                View Books ({{ order.rentalOrderDetails.length }})
+                View Books ({{ order.details.length }})
               </div>
               <div class="collapse-content">
                 <div class="space-y-3">
-                  @for (detail of order.rentalOrderDetails; track detail.id) {
+                  @for (detail of order.details; track detail.id) {
                   <div
                     class="flex items-center justify-between p-3 bg-base-200 rounded-lg"
                   >
-                    <div>
+                    <div class="flex-1">
                       <h4 class="font-medium">
                         {{ detail.bookTitle || "Unknown Title" }}
                       </h4>
                       <p class="text-sm text-base-content/70">
                         by {{ detail.bookAuthor || "Unknown Author" }}
                       </p>
+                      @if (detail.bookGenre) {
+                      <p class="text-xs text-base-content/60 mt-1">
+                        Genre: {{ detail.bookGenre }}
+                      </p>
+                      }
                     </div>
                     <div class="text-right text-sm">
-                      <p class="font-medium">
+                      <div class="flex items-center space-x-2">
+                        <span
+                          class="badge badge-sm"
+                          [class]="
+                            detail.isReturned
+                              ? 'badge-success'
+                              : detail.isOverdue
+                              ? 'badge-error'
+                              : 'badge-warning'
+                          "
+                        >
+                          {{
+                            detail.isReturned
+                              ? "Returned"
+                              : detail.isOverdue
+                              ? "Overdue"
+                              : "Active"
+                          }}
+                        </span>
+                      </div>
+                      <p class="font-medium mt-1">
                         {{ detail.rentalDays || 0 }} days
                       </p>
-                      <p class="text-base-content/70">
-                        ${{ (detail.pricePerDay || 0).toFixed(2) }}/day
+                      <p class="text-base-content/70 text-xs">
+                        Due: {{ formatDate(detail.dueDate) }}
                       </p>
-                      <p class="font-semibold text-primary">
-                        ${{ (detail.subtotal || 0).toFixed(2) }}
+                      @if (detail.returnDate) {
+                      <p class="text-base-content/70 text-xs">
+                        Returned: {{ formatDate(detail.returnDate) }}
                       </p>
+                      }
                     </div>
                   </div>
                   }

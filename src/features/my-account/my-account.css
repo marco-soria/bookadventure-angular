@@ -5,12 +5,13 @@
 }
 
 .tab-active {
-  @apply bg-primary text-primary-content;
+  background-color: hsl(var(--p));
+  color: hsl(var(--pc));
 }
 
 /* Avatar perfect centering */
 .avatar .rounded-full {
-  @apply border-4 border-primary/20;
+  border: 4px solid hsl(var(--p) / 0.2);
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -24,19 +25,77 @@
 }
 
 .form-control input:focus {
-  @apply border-primary ring-2 ring-primary/20;
+  border-color: hsl(var(--p));
+  box-shadow: 0 0 0 2px hsl(var(--p) / 0.2);
 }
 
 /* Form field consistency */
 .form-control {
   min-height: 4rem;
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100%;
+}
+
+.form-control .label {
+  position: relative;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0;
+  width: 100%;
+  display: block !important;
 }
 
 .form-control .input,
 .form-control .input.cursor-not-allowed {
   min-height: 3rem;
-  display: flex;
+  display: flex !important;
   align-items: center;
+  width: 100% !important;
+  flex: none !important;
+  margin-top: 0 !important;
+}
+
+/* Ensure labels stay on top in edit mode */
+.form-control .label .label-text {
+  display: block !important;
+  width: 100%;
+  text-align: left;
+}
+
+/* Force vertical layout even in edit mode */
+.form-control input[type="text"],
+.form-control input[type="number"],
+.form-control input[type="tel"] {
+  width: 100% !important;
+  display: block !important;
+  margin-top: 0.25rem;
+}
+
+/* Prevent horizontal alignment changes */
+.grid .form-control {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Ensure labels stay in place during edit mode */
+.form-control .label {
+  display: flex;
+  align-items: flex-start;
+  min-height: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-control .label-text {
+  flex-shrink: 0;
+  width: 100%;
+}
+
+/* Prevent layout shifts during edit transitions */
+.form-control input,
+.form-control div.input {
+  transition: none !important;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .card {
@@ -44,7 +103,7 @@
 }
 
 .card:hover {
-  @apply shadow-2xl;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 }
 
 .collapse {
@@ -52,37 +111,47 @@
 }
 
 .badge-success {
-  @apply bg-green-500 text-white border-green-500;
+  background-color: #10b981;
+  color: white;
+  border-color: #10b981;
 }
 
 .badge-info {
-  @apply bg-blue-500 text-white border-blue-500;
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
 }
 
 .badge-error {
-  @apply bg-red-500 text-white border-red-500;
+  background-color: #ef4444;
+  color: white;
+  border-color: #ef4444;
 }
 
 .badge-warning {
-  @apply bg-yellow-500 text-white border-yellow-500;
+  background-color: #f59e0b;
+  color: white;
+  border-color: #f59e0b;
 }
 
 .badge-neutral {
-  @apply bg-gray-500 text-white border-gray-500;
+  background-color: #6b7280;
+  color: white;
+  border-color: #6b7280;
 }
 
 /* Loading spinner customization */
 .loading-spinner {
-  @apply text-primary;
+  color: hsl(var(--p));
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .tabs {
-    @apply w-full;
+    width: 100%;
   }
 
   .tab {
-    @apply flex-1;
+    flex: 1;
   }
 }
