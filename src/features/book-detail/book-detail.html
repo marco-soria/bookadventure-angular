@@ -1,0 +1,102 @@
+<div class="book-detail-container">
+  <!-- Loading State -->
+  @if (isLoading()) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading book details...</p>
+  </div>
+  }
+
+  <!-- Error State -->
+  @if (error() && !isLoading()) {
+  <div class="error-state">
+    <div class="error-icon">❌</div>
+    <h2>Error</h2>
+    <p>{{ error() }}</p>
+    <button class="btn btn-primary" (click)="goBack()">Go Back to Home</button>
+  </div>
+  }
+
+  <!-- Book Detail -->
+  @if (book() && !isLoading() && !error()) {
+  <div class="book-detail">
+    <div class="book-detail-header">
+      <button class="btn btn-secondary back-btn" (click)="goBack()">
+        ← Back to Books
+      </button>
+    </div>
+
+    <div class="book-detail-content">
+      <div class="book-image-section">
+        <img
+          [src]="book()?.imageUrl || '/booknotfound.png'"
+          [alt]="book()?.title"
+          (error)="onImageError($event)"
+          class="book-image-large"
+        />
+      </div>
+
+      <div class="book-info-section">
+        <h1 class="book-title">{{ book()?.title }}</h1>
+        <h2 class="book-author">by {{ book()?.author }}</h2>
+
+        <div class="book-genre">
+          <span class="genre-badge">{{ book()?.genreName }}</span>
+        </div>
+
+        <div class="book-details">
+          @if (book()?.isbn) {
+          <div class="detail-item">
+            <strong>ISBN:</strong> {{ book()?.isbn }}
+          </div>
+          }
+
+          <div class="detail-item">
+            <strong>Stock:</strong>
+            <span
+              [class]="
+                book()!.stock > 0 ? 'stock-available' : 'stock-unavailable'
+              "
+            >
+              {{ book()?.stock }}
+              {{ book()!.stock === 1 ? "copy" : "copies" }} available
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <strong>Status:</strong>
+            <span
+              [class]="book()?.status ? 'status-active' : 'status-inactive'"
+            >
+              {{ book()?.status ? "Available" : "Not Available" }}
+            </span>
+          </div>
+        </div>
+
+        @if (book()?.description) {
+        <div class="book-description">
+          <h3>Description</h3>
+          <p>{{ book()?.description }}</p>
+        </div>
+        }
+
+        <div class="book-actions">
+          <button
+            class="btn btn-primary rent-btn"
+            [disabled]="!book()?.status || book()!.stock <= 0"
+            (click)="rentBook()"
+          >
+            @if (book()?.status && book()!.stock > 0) {
+            <span>📚 Rent This Book</span>
+            } @else if (!book()?.status) {
+            <span>❌ Not Available</span>
+            } @else if (book()?.status && book()!.stock <= 0) {
+            <span>📭 Out of Stock</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+</div>

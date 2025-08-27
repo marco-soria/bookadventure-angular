@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import {
   AbstractControl,
@@ -13,7 +12,7 @@ import { RegisterRequest } from '../../types/auth';
 
 @Component({
   selector: 'app-register',
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [RouterModule, ReactiveFormsModule],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })

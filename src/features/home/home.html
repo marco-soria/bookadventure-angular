@@ -1,1 +1,215 @@
-<p>home works!</p>
+<div class="home-container">
+  <!-- Header Section -->
+  <div class="home-header">
+    <h1 class="page-title">📚 Book Adventure</h1>
+    <p class="page-subtitle">Discover your next great read</p>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="filters-container">
+      <div class="filters-grid">
+        <!-- Genre Filter -->
+        <div class="filter-group">
+          <label for="genre-select" class="filter-label">Genre:</label>
+          <select
+            id="genre-select"
+            [(ngModel)]="selectedGenre"
+            (change)="onGenreChange()"
+            class="filter-select"
+          >
+            <option [value]="null">All Genres</option>
+            @for (genre of genres(); track genre.id) {
+            <option [value]="genre.id">
+              {{ genre.name }}
+            </option>
+            }
+          </select>
+        </div>
+
+        <!-- Sort Filter -->
+        <div class="filter-group">
+          <label for="sort-select" class="filter-label">Sort:</label>
+          <select
+            id="sort-select"
+            [(ngModel)]="sortOrder"
+            (change)="onSortChange()"
+            class="filter-select"
+          >
+            <option value="none">A - Z</option>
+            <option value="asc">A - Z</option>
+            <option value="desc">Z - A</option>
+          </select>
+        </div>
+
+        <!-- Clear Filters -->
+        <div class="filter-group">
+          <button
+            class="clear-filters-btn"
+            (click)="clearFilters()"
+            [disabled]="selectedGenre() === null && sortOrder() === 'none'"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <!-- Search indicator from navbar -->
+      @if (searchFromNavbar()) {
+      <div class="search-indicator-section">
+        <div class="search-indicator-badge">
+          Searching for: "{{ searchFromNavbar() }}"
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  <!-- Loading State -->
+  @if (isLoading()) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading books...</p>
+  </div>
+  }
+
+  <!-- Error State -->
+  @if (error() && !isLoading()) {
+  <div class="error-state">
+    <div class="error-icon">❌</div>
+    <h2>Error</h2>
+    <p>{{ error() }}</p>
+    <button class="btn btn-primary" (click)="loadBooks()">Try Again</button>
+  </div>
+  }
+
+  <!-- Books Grid -->
+  @if (!isLoading() && !error()) {
+  <div class="books-section">
+    <!-- Results Info -->
+    @if (books().length > 0) {
+    <div class="results-info">
+      <p>
+        Showing {{ (currentPage() - 1) * pageSize() + 1 }} -
+        {{ Math.min(currentPage() * pageSize(), totalRecords()) }}
+        of {{ totalRecords() }} books
+      </p>
+    </div>
+    }
+
+    <!-- No Results -->
+    @if (books().length === 0) {
+    <div class="no-results">
+      <div class="no-results-icon">📚</div>
+      <h3>No books found</h3>
+      @if (searchFromNavbar()) {
+      <p>Try searching with different keywords</p>
+      } @if (selectedGenre() || sortOrder() !== 'none') {
+      <p>Try adjusting your filters</p>
+      } @if (!searchFromNavbar() && selectedGenre() === null && sortOrder() ===
+      'none') {
+      <p>No books available at the moment</p>
+      }
+    </div>
+    }
+
+    <!-- Books Grid -->
+    @if (books().length > 0) {
+    <div class="books-grid">
+      @for (book of books(); track book.id) {
+      <div class="book-card">
+        <div class="book-image-container">
+          <img
+            [src]="book.imageUrl || 'booknotfound.png'"
+            [alt]="book.title"
+            (error)="onImageError($event)"
+            class="book-image"
+          />
+          <div class="book-overlay">
+            <span class="genre-badge">{{ book.genreName }}</span>
+          </div>
+        </div>
+
+        <div class="book-info">
+          <h3 class="book-title">{{ book.title }}</h3>
+          <p class="book-author">by {{ book.author }}</p>
+
+          <div class="book-meta">
+            <span
+              class="stock-info"
+              [class]="book.stock > 0 ? 'in-stock' : 'out-of-stock'"
+            >
+              {{ book.stock > 0 ? book.stock + " available" : "Out of stock" }}
+            </span>
+          </div>
+        </div>
+
+        <div class="book-actions">
+          <button
+            class="btn btn-outline details-btn"
+            [routerLink]="['/book', book.id]"
+          >
+            📖 Details
+          </button>
+          <button
+            class="btn btn-primary rent-btn"
+            [disabled]="!book.status || book.stock <= 0"
+            (click)="onRentBook(book)"
+          >
+            @if (book.status && book.stock > 0) {
+            <span>📚 Rent</span>
+            } @else {
+            <span>❌ Unavailable</span>
+            }
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Pagination -->
+    @if (totalPages() > 1) {
+    <div class="pagination">
+      <div class="pagination-controls">
+        <!-- Previous Button -->
+        <button
+          class="pagination-btn prev-btn"
+          [disabled]="currentPage() === 1"
+          (click)="onPageChange(currentPage() - 1)"
+        >
+          <span>←</span>
+          <span>Previous</span>
+        </button>
+
+        <!-- Page Numbers -->
+        <div class="page-numbers">
+          @for (page of getPageNumbers(); track page) {
+          <button
+            class="pagination-number"
+            [class.active]="page === currentPage()"
+            (click)="onPageChange(page)"
+          >
+            {{ page }}
+          </button>
+          }
+        </div>
+
+        <!-- Next Button -->
+        <button
+          class="pagination-btn next-btn"
+          [disabled]="currentPage() === totalPages()"
+          (click)="onPageChange(currentPage() + 1)"
+        >
+          <span>Next</span>
+          <span>→</span>
+        </button>
+      </div>
+
+      <div class="pagination-info">
+        Page {{ currentPage() }} of {{ totalPages() }}
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>

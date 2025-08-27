@@ -14,32 +14,14 @@
   <!-- Barra de búsqueda (centro) -->
   <div class="navbar-center hidden lg:flex items-center">
     <div class="form-control">
-      <div class="input-group">
-        <input
-          type="text"
-          placeholder="Search books..."
-          class="input input-bordered w-80"
-          [value]="searchQuery()"
-          (input)="updateSearchQuery($any($event.target).value)"
-          (keyup.enter)="onSearch()"
-        />
-        <button class="btn btn-square btn-primary" (click)="onSearch()">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </button>
-      </div>
+      <input
+        type="text"
+        placeholder="Search books by title..."
+        class="input input-bordered w-80"
+        [value]="searchQuery()"
+        (input)="updateSearchQuery($any($event.target).value); onSearchInput()"
+        (keyup.enter)="onSearch()"
+      />
     </div>
   </div>
 
@@ -203,31 +185,13 @@
 <!-- Búsqueda móvil -->
 <div class="lg:hidden bg-base-100 border-t border-base-300 p-4">
   <div class="form-control">
-    <div class="input-group">
-      <input
-        type="text"
-        placeholder="Search books..."
-        class="input input-bordered flex-1"
-        [value]="searchQuery()"
-        (input)="updateSearchQuery($any($event.target).value)"
-        (keyup.enter)="onSearch()"
-      />
-      <button class="btn btn-square btn-primary" (click)="onSearch()">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
-      </button>
-    </div>
+    <input
+      type="text"
+      placeholder="Search books by title..."
+      class="input input-bordered w-full"
+      [value]="searchQuery()"
+      (input)="updateSearchQuery($any($event.target).value); onSearchInput()"
+      (keyup.enter)="onSearch()"
+    />
   </div>
 </div>

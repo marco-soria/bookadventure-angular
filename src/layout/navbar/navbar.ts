@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   Component,
   computed,
@@ -7,22 +6,28 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { AuthService } from '../../core/services/auth-service';
+import { BookService } from '../../core/services/book.service';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule, RouterModule, FormsModule],
+  standalone: true,
+  imports: [RouterModule, FormsModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
 export class Navbar {
   private authService = inject(AuthService);
+  private bookService = inject(BookService);
+  private router = inject(Router);
+  private searchSubject = new Subject<string>();
 
   // Signals para estado reactivo
   searchQuery = signal('');
   isUserMenuOpen = signal(false);
-  currentTheme = signal<'cupcake' | 'dark'>('cupcake');
+  currentTheme = signal<'retro' | 'dark'>('retro');
 
   // Auth computed signals from service
   isAuthenticated = this.authService.isAuthenticated;
@@ -39,14 +44,29 @@ export class Navbar {
 
   constructor() {
     this.initializeTheme();
+    this.setupSearch();
+  }
+
+  // Setup debounced search
+  setupSearch() {
+    this.searchSubject
+      .pipe(
+        debounceTime(500), // Wait 500ms after user stops typing
+        distinctUntilChanged() // Only emit if value has changed
+      )
+      .subscribe((searchTerm) => {
+        if (searchTerm.trim()) {
+          // Navigate to home with search parameter
+          this.router.navigate(['/home'], {
+            queryParams: { search: searchTerm.trim() },
+          });
+        }
+      });
   }
 
   // Inicializar tema según preferencia del sistema o localStorage
   initializeTheme() {
-    const savedTheme = localStorage.getItem('theme') as
-      | 'cupcake'
-      | 'dark'
-      | null;
+    const savedTheme = localStorage.getItem('theme') as 'retro' | 'dark' | null;
 
     // Si no hay tema guardado, DaisyUI maneja automáticamente con --default y --prefersdark
     if (savedTheme) {
@@ -57,7 +77,7 @@ export class Navbar {
       const systemPrefersDark = window.matchMedia(
         '(prefers-color-scheme: dark)'
       ).matches;
-      const theme = systemPrefersDark ? 'dark' : 'cupcake';
+      const theme = systemPrefersDark ? 'dark' : 'retro';
       this.currentTheme.set(theme);
       document.documentElement.setAttribute('data-theme', theme);
     }
@@ -67,7 +87,7 @@ export class Navbar {
       .matchMedia('(prefers-color-scheme: dark)')
       .addEventListener('change', (e) => {
         if (!localStorage.getItem('theme')) {
-          const newTheme = e.matches ? 'dark' : 'cupcake';
+          const newTheme = e.matches ? 'dark' : 'retro';
           this.currentTheme.set(newTheme);
           document.documentElement.setAttribute('data-theme', newTheme);
         }
@@ -78,9 +98,15 @@ export class Navbar {
   onSearch() {
     const query = this.searchQuery();
     if (query.trim()) {
-      console.log('Searching for:', query);
-      // TODO: Implementar búsqueda
+      this.router.navigate(['/home'], {
+        queryParams: { search: query.trim() },
+      });
     }
+  }
+
+  onSearchInput() {
+    // Trigger debounced search
+    this.searchSubject.next(this.searchQuery());
   }
 
   updateSearchQuery(value: string) {
@@ -104,7 +130,7 @@ export class Navbar {
 
   // Toggle theme (DaisyUI)
   toggleTheme() {
-    const newTheme = this.currentTheme() === 'dark' ? 'cupcake' : 'dark';
+    const newTheme = this.currentTheme() === 'dark' ? 'retro' : 'dark';
     this.currentTheme.set(newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
