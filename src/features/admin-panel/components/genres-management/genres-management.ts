@@ -37,11 +37,17 @@ export class GenresManagement implements OnInit {
   async loadData() {
     this.isLoading.set(true);
     try {
-      const genres = await this.adminService.getGenres();
-      this.genres.set(genres);
+      const genresResult = await this.adminService.getGenresWithPagination(1, 50);
+      if (genresResult.success) {
+        this.genres.set(genresResult.data);
+      } else {
+        this.genres.set([]);
+        this.adminService.showError('Error loading genres');
+      }
     } catch (error) {
       console.error('Error loading data:', error);
       this.adminService.showError('Error loading data');
+      this.genres.set([]);
     } finally {
       this.isLoading.set(false);
     }

@@ -15,12 +15,43 @@ export class AdminService {
   async getBooks() {
     try {
       const response = await firstValueFrom(
-        this.http.get<any>(`${this.baseUrl}books`)
+        this.http.get<any>(`${this.baseUrl}books/admin/all`)
       );
       return response.success ? response.data : [];
     } catch (error) {
       console.error('Error loading books:', error);
       return [];
+    }
+  }
+
+  async getBooksWithPagination(page: number = 1, pageSize: number = 10) {
+    try {
+      const response = await firstValueFrom(
+        this.http.get<any>(
+          `${this.baseUrl}books/admin/all?page=${page}&recordsPerPage=${pageSize}`
+        )
+      );
+
+      if (response.success) {
+        return {
+          data: response.data || [],
+          totalRecords: response.totalRecords || 0,
+          success: true,
+        };
+      }
+
+      return {
+        data: [],
+        totalRecords: 0,
+        success: false,
+      };
+    } catch (error) {
+      console.error('Error loading books with pagination:', error);
+      return {
+        data: [],
+        totalRecords: 0,
+        success: false,
+      };
     }
   }
 
@@ -45,16 +76,54 @@ export class AdminService {
     return response;
   }
 
+  async restoreBook(id: number) {
+    const response = await firstValueFrom(
+      this.http.put<any>(`${this.baseUrl}books/${id}/restore`, {})
+    );
+    return response;
+  }
+
   // === GENRES ===
   async getGenres() {
     try {
       const response = await firstValueFrom(
-        this.http.get<any>(`${this.baseUrl}genres`)
+        this.http.get<any>(`${this.baseUrl}genres/admin/all`)
       );
       return response.success ? response.data : [];
     } catch (error) {
       console.error('Error loading genres:', error);
       return [];
+    }
+  }
+
+  async getGenresWithPagination(page: number = 1, pageSize: number = 10) {
+    try {
+      const response = await firstValueFrom(
+        this.http.get<any>(
+          `${this.baseUrl}genres/admin/all?page=${page}&recordsPerPage=${pageSize}`
+        )
+      );
+
+      if (response.success) {
+        return {
+          data: response.data || [],
+          totalRecords: response.totalRecords || 0,
+          success: true,
+        };
+      }
+
+      return {
+        data: [],
+        totalRecords: 0,
+        success: false,
+      };
+    } catch (error) {
+      console.error('Error loading genres with pagination:', error);
+      return {
+        data: [],
+        totalRecords: 0,
+        success: false,
+      };
     }
   }
 
@@ -79,16 +148,54 @@ export class AdminService {
     return response;
   }
 
+  async restoreGenre(id: number) {
+    const response = await firstValueFrom(
+      this.http.put<any>(`${this.baseUrl}genres/${id}/restore`, {})
+    );
+    return response;
+  }
+
   // === CUSTOMERS ===
   async getCustomers() {
     try {
       const response = await firstValueFrom(
-        this.http.get<any>(`${this.baseUrl}customers`)
+        this.http.get<any>(`${this.baseUrl}customers/admin/all`)
       );
       return response.success ? response.data : [];
     } catch (error) {
       console.error('Error loading customers:', error);
       return [];
+    }
+  }
+
+  async getCustomersWithPagination(page: number = 1, pageSize: number = 10) {
+    try {
+      const response = await firstValueFrom(
+        this.http.get<any>(
+          `${this.baseUrl}customers/admin/all?page=${page}&recordsPerPage=${pageSize}`
+        )
+      );
+
+      if (response.success) {
+        return {
+          data: response.data || [],
+          totalRecords: response.totalRecords || 0,
+          success: true,
+        };
+      }
+
+      return {
+        data: [],
+        totalRecords: 0,
+        success: false,
+      };
+    } catch (error) {
+      console.error('Error loading customers with pagination:', error);
+      return {
+        data: [],
+        totalRecords: 0,
+        success: false,
+      };
     }
   }
 
@@ -120,16 +227,54 @@ export class AdminService {
     return response;
   }
 
+  async restoreCustomer(id: number) {
+    const response = await firstValueFrom(
+      this.http.put<any>(`${this.baseUrl}customers/${id}/restore`, {})
+    );
+    return response;
+  }
+
   // === RENTALS ===
   async getRentals() {
     try {
       const response = await firstValueFrom(
-        this.http.get<any>(`${this.baseUrl}rentalorders`)
+        this.http.get<any>(`${this.baseUrl}rentalorders/admin/all`)
       );
       return response.success ? response.data : [];
     } catch (error) {
       console.error('Error loading rentals:', error);
       return [];
+    }
+  }
+
+  async getRentalsWithPagination(page: number = 1, pageSize: number = 10) {
+    try {
+      const response = await firstValueFrom(
+        this.http.get<any>(
+          `${this.baseUrl}rentalorders/admin/all?page=${page}&recordsPerPage=${pageSize}`
+        )
+      );
+
+      if (response.success) {
+        return {
+          data: response.data || [],
+          totalRecords: response.totalRecords || 0,
+          success: true,
+        };
+      }
+
+      return {
+        data: [],
+        totalRecords: 0,
+        success: false,
+      };
+    } catch (error) {
+      console.error('Error loading rentals with pagination:', error);
+      return {
+        data: [],
+        totalRecords: 0,
+        success: false,
+      };
     }
   }
 
@@ -154,6 +299,13 @@ export class AdminService {
     return response;
   }
 
+  async restoreRental(id: number) {
+    const response = await firstValueFrom(
+      this.http.put<any>(`${this.baseUrl}rentalorders/${id}/restore`, {})
+    );
+    return response;
+  }
+
   // === UTILITY METHODS ===
   showSuccess(message: string) {
     Swal.fire({
@@ -162,8 +314,11 @@ export class AdminService {
       icon: 'success',
       timer: 2000,
       showConfirmButton: false,
-      background: 'hsl(var(--b1))',
-      color: 'hsl(var(--bc))',
+      background: '#ffffff',
+      color: '#1f2937',
+      customClass: {
+        popup: 'shadow-lg border border-gray-200',
+      },
     });
   }
 
@@ -172,9 +327,12 @@ export class AdminService {
       title: 'Error!',
       text: message,
       icon: 'error',
-      background: 'hsl(var(--b1))',
-      color: 'hsl(var(--bc))',
+      background: '#ffffff',
+      color: '#1f2937',
       confirmButtonColor: '#ef4444',
+      customClass: {
+        popup: 'shadow-lg border border-gray-200',
+      },
     });
   }
 
@@ -187,8 +345,29 @@ export class AdminService {
       confirmButtonColor: '#ef4444',
       cancelButtonColor: '#6b7280',
       confirmButtonText: 'Yes, delete it!',
-      background: 'hsl(var(--b1))',
-      color: 'hsl(var(--bc))',
+      background: '#ffffff',
+      color: '#1f2937',
+      customClass: {
+        popup: 'shadow-lg border border-gray-200',
+      },
+    });
+    return result.isConfirmed;
+  }
+
+  async confirmRestore(title: string, text: string): Promise<boolean> {
+    const result = await Swal.fire({
+      title,
+      text,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#10b981',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Yes, restore it!',
+      background: '#ffffff',
+      color: '#1f2937',
+      customClass: {
+        popup: 'shadow-lg border border-gray-200',
+      },
     });
     return result.isConfirmed;
   }

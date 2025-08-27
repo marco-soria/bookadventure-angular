@@ -41,7 +41,7 @@ export class RentalsManagement implements OnInit {
   );
 
   filteredBooks = computed(() =>
-    this.books().filter((book) => book.status === 1 && book.isAvailable)
+    this.books().filter((book) => book.status && book.isAvailable)
   );
 
   async ngOnInit() {
@@ -51,17 +51,39 @@ export class RentalsManagement implements OnInit {
   async loadData() {
     this.isLoading.set(true);
     try {
-      const [rentals, customers, books] = await Promise.all([
-        this.adminService.getRentals(),
-        this.adminService.getCustomers(),
-        this.adminService.getBooks(),
+      const [rentalsResult, customersResult, booksResult] = await Promise.all([
+        this.adminService.getRentalsWithPagination(1, 50),
+        this.adminService.getCustomersWithPagination(1, 50),
+        this.adminService.getBooksWithPagination(1, 100),
       ]);
-      this.rentals.set(rentals);
-      this.customers.set(customers);
-      this.books.set(books);
+      
+      if (rentalsResult.success) {
+        this.rentals.set(rentalsResult.data);
+      } else {
+        this.rentals.set([]);
+      }
+      
+      if (customersResult.success) {
+        this.customers.set(customersResult.data);
+      } else {
+        this.customers.set([]);
+      }
+      
+      if (booksResult.success) {
+        this.books.set(booksResult.data);
+      } else {
+        this.books.set([]);
+      }
+      
+      if (!rentalsResult.success || !customersResult.success || !booksResult.success) {
+        this.adminService.showError('Error loading data');
+      }
     } catch (error) {
       console.error('Error loading data:', error);
       this.adminService.showError('Error loading data');
+      this.rentals.set([]);
+      this.customers.set([]);
+      this.books.set([]);
     } finally {
       this.isLoading.set(false);
     }

@@ -41,11 +41,17 @@ export class CustomersManagement implements OnInit {
   async loadData() {
     this.isLoading.set(true);
     try {
-      const customers = await this.adminService.getCustomers();
-      this.customers.set(customers);
+      const customersResult = await this.adminService.getCustomersWithPagination(1, 50);
+      if (customersResult.success) {
+        this.customers.set(customersResult.data);
+      } else {
+        this.customers.set([]);
+        this.adminService.showError('Error loading customers');
+      }
     } catch (error) {
       console.error('Error loading data:', error);
       this.adminService.showError('Error loading data');
+      this.customers.set([]);
     } finally {
       this.isLoading.set(false);
     }

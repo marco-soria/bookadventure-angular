@@ -2,14 +2,16 @@ export interface Book {
   id: number;
   title: string;
   author: string;
-  genre: string;
   isbn: string;
   description?: string;
   stock: number;
-  genreId: number;
-  imageUrl?: string;
   isAvailable: boolean;
-  status: number;
+  imageUrl?: string;
+  status: boolean; // Changed from number to boolean to match backend
+  createdAt: string;
+  updatedAt?: string;
+  genreId: number;
+  genreName: string; // Added to match backend response
 }
 
 export interface Genre {

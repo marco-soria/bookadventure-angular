@@ -13,12 +13,20 @@ import { AdminService } from '../../services/admin.service';
 export class BooksManagement implements OnInit {
   private adminService = inject(AdminService);
 
+  // Make Math available in template
+  Math = Math;
+
   // Estado
   books = signal<Book[]>([]);
   genres = signal<Genre[]>([]);
   isLoading = signal<boolean>(false);
   showForm = signal<boolean>(false);
   editingItem = signal<Book | null>(null);
+
+  // Paginación
+  currentPage = signal<number>(1);
+  pageSize = signal<number>(10);
+  totalItems = signal<number>(0);
 
   // Formulario
   form = signal<BookForm>({
@@ -33,9 +41,40 @@ export class BooksManagement implements OnInit {
   });
 
   // Computed properties
-  filteredBooks = computed(() =>
-    this.books().filter((book) => book.status === 1)
-  );
+  filteredBooks = computed(() => this.books());
+
+  totalPages = computed(() => Math.ceil(this.totalItems() / this.pageSize()));
+
+  // Los libros ya vienen paginados del backend
+  paginatedBooks = computed(() => this.books());
+
+  // Array para los números de páginas (máximo 10 páginas visibles)
+  visiblePages = computed(() => {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const pages: number[] = [];
+
+    if (total <= 10) {
+      // Si hay 10 páginas o menos, mostrar todas
+      for (let i = 1; i <= total; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Lógica para mostrar páginas alrededor de la actual
+      let start = Math.max(1, current - 4);
+      let end = Math.min(total, start + 9);
+
+      if (end - start < 9) {
+        start = Math.max(1, end - 9);
+      }
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
+  });
 
   async ngOnInit() {
     await this.loadData();
@@ -44,18 +83,60 @@ export class BooksManagement implements OnInit {
   async loadData() {
     this.isLoading.set(true);
     try {
-      const [books, genres] = await Promise.all([
-        this.adminService.getBooks(),
+      const [booksResult, genres] = await Promise.all([
+        this.adminService.getBooksWithPagination(
+          this.currentPage(),
+          this.pageSize()
+        ),
         this.adminService.getGenres(),
       ]);
-      this.books.set(books);
+
+      if (booksResult.success) {
+        this.books.set(booksResult.data);
+        this.totalItems.set(booksResult.totalRecords);
+      } else {
+        this.books.set([]);
+        this.totalItems.set(0);
+        this.adminService.showError('Error loading books');
+      }
+
       this.genres.set(genres);
     } catch (error) {
       console.error('Error loading data:', error);
       this.adminService.showError('Error loading data');
+      this.books.set([]);
+      this.totalItems.set(0);
     } finally {
       this.isLoading.set(false);
     }
+  }
+
+  // Métodos de paginación
+  async goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+      await this.loadData();
+    }
+  }
+
+  async nextPage() {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.set(this.currentPage() + 1);
+      await this.loadData();
+    }
+  }
+
+  async prevPage() {
+    if (this.currentPage() > 1) {
+      this.currentPage.set(this.currentPage() - 1);
+      await this.loadData();
+    }
+  }
+
+  async changePageSize(newSize: number) {
+    this.pageSize.set(newSize);
+    this.currentPage.set(1); // Reset to first page
+    await this.loadData();
   }
 
   openForm(book?: Book) {
@@ -157,6 +238,33 @@ export class BooksManagement implements OnInit {
       } catch (error) {
         console.error('Error deleting book:', error);
         this.adminService.showError('Error deleting book');
+      }
+    }
+  }
+
+  async restore(bookId: number) {
+    const book = this.books().find((b) => b.id === bookId);
+    if (!book) return;
+
+    const confirmed = await this.adminService.confirmRestore(
+      'Restore Book',
+      `Are you sure you want to restore "${book.title}"?`
+    );
+
+    if (confirmed) {
+      try {
+        const response = await this.adminService.restoreBook(book.id);
+        if (response.success) {
+          this.adminService.showSuccess('Book restored successfully');
+          await this.loadData();
+        } else {
+          this.adminService.showError(
+            response.errorMessage || 'Error restoring book'
+          );
+        }
+      } catch (error) {
+        console.error('Error restoring book:', error);
+        this.adminService.showError('Error restoring book');
       }
     }
   }
