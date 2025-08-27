@@ -182,9 +182,15 @@ export class MyAccount implements OnInit {
             title: 'Success!',
             text: 'Profile updated successfully!',
             icon: 'success',
-            background: 'hsl(var(--b1))',
-            color: 'hsl(var(--bc))',
-            confirmButtonColor: 'hsl(var(--p))',
+            confirmButtonText: 'Great!',
+            confirmButtonColor: '#28a745',
+            background: '#1f2937',
+            color: '#f9fafb',
+            customClass: {
+              popup: 'dark-swal-popup',
+              title: 'dark-swal-title',
+              htmlContainer: 'dark-swal-content',
+            },
           });
         } else {
           Swal.fire({
@@ -193,9 +199,15 @@ export class MyAccount implements OnInit {
               'Failed to update profile: ' +
               (response.errorMessage || 'Unknown error'),
             icon: 'error',
-            background: 'hsl(var(--b1))',
-            color: 'hsl(var(--bc))',
-            confirmButtonColor: 'hsl(var(--er))',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#dc3545',
+            background: '#1f2937',
+            color: '#f9fafb',
+            customClass: {
+              popup: 'dark-swal-popup',
+              title: 'dark-swal-title',
+              htmlContainer: 'dark-swal-content',
+            },
           });
         }
       },
@@ -205,9 +217,15 @@ export class MyAccount implements OnInit {
           text:
             'Failed to update profile: ' + (error.message || 'Unknown error'),
           icon: 'error',
-          background: 'hsl(var(--b1))',
-          color: 'hsl(var(--bc))',
-          confirmButtonColor: 'hsl(var(--er))',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#dc3545',
+          background: '#1f2937',
+          color: '#f9fafb',
+          customClass: {
+            popup: 'dark-swal-popup',
+            title: 'dark-swal-title',
+            htmlContainer: 'dark-swal-content',
+          },
         });
       },
     });

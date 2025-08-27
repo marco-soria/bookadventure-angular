@@ -26,11 +26,28 @@
 /* Enhanced button hover effects */
 .rental-option-btn {
   transition: all 0.2s ease-in-out;
+  cursor: pointer;
 }
 
 .rental-option-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+/* Ensure all interactive elements have pointer cursor */
+button,
+input[type="button"],
+input[type="submit"],
+.btn,
+[role="button"] {
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled,
+.btn:disabled {
+  cursor: not-allowed;
 }
 
 /* Loading animation enhancement */

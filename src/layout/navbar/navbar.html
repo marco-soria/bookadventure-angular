@@ -26,26 +26,6 @@
         <li><a routerLink="/login">Login</a></li>
         <li><a routerLink="/register">Register</a></li>
         } @if (isAuthenticated()) {
-        <!-- My Account - para todos los usuarios autenticados -->
-        <li>
-          <a routerLink="/my-account">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-              />
-            </svg>
-            My Account
-          </a>
-        </li>
         <!-- Links para admin - Admin Panel primero -->
         @if (isAdmin()) {
         <li>
@@ -71,6 +51,28 @@
               />
             </svg>
             Admin Panel
+          </a>
+        </li>
+        }
+        <!-- My Account - solo para usuarios no admin -->
+        @if (!isAdmin()) {
+        <li>
+          <a routerLink="/my-account">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
+            </svg>
+            My Account
           </a>
         </li>
         }
@@ -236,7 +238,8 @@
           </li>
           }
 
-          <!-- My Account - para todos los usuarios autenticados -->
+          <!-- My Account - solo para usuarios no admin -->
+          @if (!isAdmin()) {
           <li>
             <a routerLink="/my-account">
               <svg
@@ -256,6 +259,7 @@
               My Account
             </a>
           </li>
+          }
 
           <!-- Logout - para todos los usuarios autenticados -->
           <li>

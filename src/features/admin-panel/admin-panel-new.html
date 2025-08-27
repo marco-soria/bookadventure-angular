@@ -1,0 +1,829 @@
+<div class="min-h-screen bg-base-100 p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold mb-2 text-base-content">Admin Panel</h1>
+      <p class="text-base-content/70">
+        Manage books, genres, customers, and rental orders
+      </p>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs tabs-boxed bg-base-200 mb-6">
+      <button
+        class="tab tab-lg"
+        [class.tab-active]="activeTab() === 'books'"
+        (click)="setActiveTab('books')"
+      >
+        📚 Books
+      </button>
+      <button
+        class="tab tab-lg"
+        [class.tab-active]="activeTab() === 'genres'"
+        (click)="setActiveTab('genres')"
+      >
+        🏷️ Genres
+      </button>
+      <button
+        class="tab tab-lg"
+        [class.tab-active]="activeTab() === 'customers'"
+        (click)="setActiveTab('customers')"
+      >
+        👥 Customers
+      </button>
+      <button
+        class="tab tab-lg"
+        [class.tab-active]="activeTab() === 'rentals'"
+        (click)="setActiveTab('rentals')"
+      >
+        📋 Rentals
+      </button>
+      <button
+        class="tab tab-lg"
+        [class.tab-active]="activeTab() === 'reports'"
+        (click)="setActiveTab('reports')"
+      >
+        📊 Reports
+      </button>
+    </div>
+
+    <!-- Loading Spinner -->
+    @if (isLoading()) {
+    <div class="flex justify-center py-8">
+      <span class="loading loading-spinner loading-lg"></span>
+    </div>
+    }
+
+    <!-- Books Tab -->
+    @if (activeTab() === 'books' && !isLoading()) {
+    <div class="space-y-6">
+      <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-semibold text-base-content">
+          Books Management
+        </h2>
+        <button class="btn btn-primary" (click)="openBookForm()">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            ></path>
+          </svg>
+          Add Book
+        </button>
+      </div>
+
+      <!-- Books Table -->
+      <div class="overflow-x-auto">
+        <table class="table table-zebra">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Author</th>
+              <th>Genre</th>
+              <th>ISBN</th>
+              <th>Stock</th>
+              <th>Available</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (book of filteredBooks(); track book.id) {
+            <tr>
+              <td>{{ book.id }}</td>
+              <td>{{ book.title }}</td>
+              <td>{{ book.author }}</td>
+              <td>{{ book.genre }}</td>
+              <td>{{ book.isbn }}</td>
+              <td>{{ book.stock }}</td>
+              <td>
+                <div
+                  class="badge"
+                  [class]="book.isAvailable ? 'badge-success' : 'badge-error'"
+                >
+                  {{ book.isAvailable ? "Yes" : "No" }}
+                </div>
+              </td>
+              <td>
+                <div class="flex gap-2">
+                  <button
+                    class="btn btn-sm btn-info"
+                    (click)="openBookForm(book)"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    class="btn btn-sm btn-error"
+                    (click)="deleteBook(book.id)"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="8" class="text-center">No books found</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Book Form Modal -->
+      @if (showBookForm()) {
+      <dialog class="modal modal-open">
+        <div class="modal-box bg-base-100">
+          <h3 class="font-bold text-lg mb-4 text-base-content">
+            {{ editingItem() ? "Edit Book" : "Add New Book" }}
+          </h3>
+
+          <div class="space-y-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Title *</span>
+              </label>
+              <input
+                type="text"
+                class="input input-bordered"
+                [(ngModel)]="bookForm().title"
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Author *</span>
+              </label>
+              <input
+                type="text"
+                class="input input-bordered"
+                [(ngModel)]="bookForm().author"
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">ISBN *</span>
+              </label>
+              <input
+                type="text"
+                class="input input-bordered"
+                [(ngModel)]="bookForm().isbn"
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Description</span>
+              </label>
+              <textarea
+                class="textarea textarea-bordered"
+                rows="3"
+                [(ngModel)]="bookForm().description"
+              >
+              </textarea>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Stock *</span>
+              </label>
+              <input
+                type="number"
+                min="0"
+                class="input input-bordered"
+                [(ngModel)]="bookForm().stock"
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Genre *</span>
+              </label>
+              <select
+                class="select select-bordered w-full"
+                [(ngModel)]="bookForm().genreId"
+              >
+                <option value="0">Select a genre</option>
+                @for (genre of genres(); track genre.id) {
+                <option [value]="genre.id">{{ genre.name }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Image URL</span>
+              </label>
+              <input
+                type="url"
+                class="input input-bordered"
+                [(ngModel)]="bookForm().imageUrl"
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label cursor-pointer">
+                <span class="label-text">Available</span>
+                <input
+                  type="checkbox"
+                  class="checkbox checkbox-primary"
+                  [(ngModel)]="bookForm().isAvailable"
+                />
+              </label>
+            </div>
+          </div>
+
+          <div class="modal-action">
+            <button class="btn" (click)="showBookForm.set(false)">
+              Cancel
+            </button>
+            <button class="btn btn-primary" (click)="saveBook()">
+              {{ editingItem() ? "Update" : "Create" }} Book
+            </button>
+          </div>
+        </div>
+      </dialog>
+      }
+    </div>
+    }
+
+    <!-- Genres Tab -->
+    @if (activeTab() === 'genres' && !isLoading()) {
+    <div class="space-y-6">
+      <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-semibold text-base-content">
+          Genres Management
+        </h2>
+        <button class="btn btn-primary" (click)="openGenreForm()">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            ></path>
+          </svg>
+          Add Genre
+        </button>
+      </div>
+
+      <!-- Genres Table -->
+      <div class="overflow-x-auto">
+        <table class="table table-zebra bg-base-100">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (genre of filteredGenres(); track genre.id) {
+            <tr>
+              <td>{{ genre.id }}</td>
+              <td>{{ genre.name }}</td>
+              <td>{{ genre.description }}</td>
+              <td>
+                <div class="flex gap-2">
+                  <button
+                    class="btn btn-sm btn-info"
+                    (click)="openGenreForm(genre)"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    class="btn btn-sm btn-error"
+                    (click)="deleteGenre(genre.id)"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="4" class="text-center">No genres found</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Genre Form Modal -->
+      @if (showGenreForm()) {
+      <dialog class="modal modal-open">
+        <div class="modal-box bg-base-100">
+          <h3 class="font-bold text-lg mb-4 text-base-content">
+            {{ editingItem() ? "Edit Genre" : "Add New Genre" }}
+          </h3>
+
+          <div class="space-y-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Name *</span>
+              </label>
+              <input
+                type="text"
+                class="input input-bordered"
+                [(ngModel)]="genreForm().name"
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Description</span>
+              </label>
+              <textarea
+                class="textarea textarea-bordered"
+                rows="3"
+                [(ngModel)]="genreForm().description"
+              >
+              </textarea>
+            </div>
+          </div>
+
+          <div class="modal-action">
+            <button class="btn" (click)="showGenreForm.set(false)">
+              Cancel
+            </button>
+            <button class="btn btn-primary" (click)="saveGenre()">
+              {{ editingItem() ? "Update" : "Create" }} Genre
+            </button>
+          </div>
+        </div>
+      </dialog>
+      }
+    </div>
+    }
+
+    <!-- Customers Tab -->
+    @if (activeTab() === 'customers' && !isLoading()) {
+    <div class="space-y-6">
+      <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-semibold text-base-content">
+          Customers Management
+        </h2>
+        <button class="btn btn-primary" (click)="openCustomerForm()">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            ></path>
+          </svg>
+          Add Customer
+        </button>
+      </div>
+
+      <!-- Customers Table -->
+      <div class="overflow-x-auto">
+        <table class="table table-zebra bg-base-100">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>DNI</th>
+              <th>Age</th>
+              <th>Phone</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (customer of filteredCustomers(); track customer.id) {
+            <tr>
+              <td>{{ customer.id }}</td>
+              <td>{{ customer.firstName }} {{ customer.lastName }}</td>
+              <td>{{ customer.email }}</td>
+              <td>{{ customer.dni }}</td>
+              <td>{{ customer.age }}</td>
+              <td>{{ customer.phoneNumber || "N/A" }}</td>
+              <td>
+                <div class="flex gap-2">
+                  <button
+                    class="btn btn-sm btn-info"
+                    (click)="openCustomerForm(customer)"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    class="btn btn-sm btn-error"
+                    (click)="deleteCustomer(customer.id)"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="7" class="text-center">No customers found</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Customer Form Modal -->
+      @if (showCustomerForm()) {
+      <dialog class="modal modal-open">
+        <div class="modal-box bg-base-100">
+          <h3 class="font-bold text-lg mb-4 text-base-content">
+            {{ editingItem() ? "Edit Customer" : "Add New Customer" }}
+          </h3>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">First Name *</span>
+              </label>
+              <input
+                type="text"
+                class="input input-bordered"
+                [(ngModel)]="customerForm().firstName"
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Last Name *</span>
+              </label>
+              <input
+                type="text"
+                class="input input-bordered"
+                [(ngModel)]="customerForm().lastName"
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Email *</span>
+              </label>
+              <input
+                type="email"
+                class="input input-bordered"
+                [(ngModel)]="customerForm().email"
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">DNI *</span>
+              </label>
+              <input
+                type="text"
+                class="input input-bordered"
+                [(ngModel)]="customerForm().dni"
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Age *</span>
+              </label>
+              <input
+                type="number"
+                min="18"
+                max="120"
+                class="input input-bordered"
+                [(ngModel)]="customerForm().age"
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Phone Number</span>
+              </label>
+              <input
+                type="tel"
+                class="input input-bordered"
+                [(ngModel)]="customerForm().phoneNumber"
+              />
+            </div>
+          </div>
+
+          <div class="modal-action">
+            <button class="btn" (click)="showCustomerForm.set(false)">
+              Cancel
+            </button>
+            <button class="btn btn-primary" (click)="saveCustomer()">
+              {{ editingItem() ? "Update" : "Create" }} Customer
+            </button>
+          </div>
+        </div>
+      </dialog>
+      }
+    </div>
+    }
+
+    <!-- Rentals Tab -->
+    @if (activeTab() === 'rentals' && !isLoading()) {
+    <div class="space-y-6">
+      <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-semibold text-base-content">
+          Rental Orders Management
+        </h2>
+        <button class="btn btn-primary" (click)="openAddRentalForm()">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            ></path>
+          </svg>
+          Add Rental
+        </button>
+      </div>
+
+      <!-- Rentals Table -->
+      <div class="overflow-x-auto">
+        <table class="table table-zebra bg-base-100">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Customer</th>
+              <th>Order Date</th>
+              <th>Return Date</th>
+              <th>Books Count</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (rental of filteredRentals(); track rental.id) {
+            <tr>
+              <td>{{ rental.id }}</td>
+              <td>{{ rental.customerName }}</td>
+              <td>{{ rental.orderDate | date : "short" }}</td>
+              <td>
+                {{
+                  rental.returnDate
+                    ? (rental.returnDate | date : "short")
+                    : "Not returned"
+                }}
+              </td>
+              <td>{{ rental.details.length || 0 }}</td>
+              <td>
+                <div class="flex gap-2">
+                  <button
+                    class="btn btn-sm btn-info"
+                    title="View Details"
+                    (click)="editRental(rental)"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    class="btn btn-sm btn-error"
+                    (click)="deleteRental(rental.id)"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="6" class="text-center">No rentals found</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Rental Form Modal -->
+      @if (showRentalModal()) {
+      <dialog class="modal modal-open">
+        <div class="modal-box bg-base-100">
+          <h3 class="font-bold text-lg mb-4 text-base-content">
+            {{
+              isEditingRental() ? "Edit Rental Order" : "Add New Rental Order"
+            }}
+          </h3>
+
+          <div class="space-y-4">
+            <!-- Customer Selection -->
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Customer *</span>
+              </label>
+              <select
+                class="select select-bordered w-full"
+                [(ngModel)]="rentalForm().customerId"
+              >
+                <option value="0">Select a customer</option>
+                @for (customer of customers(); track customer.id) {
+                <option [value]="customer.id">
+                  {{ customer.firstName }} {{ customer.lastName }} ({{
+                    customer.dni
+                  }})
+                </option>
+                }
+              </select>
+            </div>
+
+            <!-- Rental Days -->
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Rental Days *</span>
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="365"
+                class="input input-bordered"
+                [(ngModel)]="rentalForm().rentalDays"
+              />
+            </div>
+
+            <!-- Notes -->
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Notes</span>
+              </label>
+              <textarea
+                class="textarea textarea-bordered"
+                rows="3"
+                maxlength="500"
+                [(ngModel)]="rentalForm().notes"
+                placeholder="Optional notes for this rental order"
+              >
+              </textarea>
+            </div>
+
+            <!-- Book Selection -->
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Books to Rent *</span>
+              </label>
+              <div class="space-y-2 max-h-48 overflow-y-auto">
+                @for (book of filteredBooks(); track book.id) {
+                <label class="cursor-pointer label justify-start">
+                  <input
+                    type="checkbox"
+                    class="checkbox checkbox-primary mr-3"
+                    [checked]="rentalForm().bookIds.includes(book.id)"
+                    (change)="toggleBookSelection(book.id, $event)"
+                  />
+                  <span class="label-text"
+                    >{{ book.title }} by {{ book.author }} ({{
+                      book.isbn
+                    }})</span
+                  >
+                </label>
+                }
+              </div>
+            </div>
+
+            <!-- Allow Partial Order -->
+            <div class="form-control">
+              <label class="cursor-pointer label justify-start">
+                <input
+                  type="checkbox"
+                  class="checkbox checkbox-primary mr-3"
+                  [(ngModel)]="rentalForm().allowPartialOrder"
+                />
+                <span class="label-text"
+                  >Allow partial order if some books are unavailable</span
+                >
+              </label>
+            </div>
+          </div>
+
+          <div class="modal-action">
+            <button class="btn" (click)="showRentalModal.set(false)">
+              Cancel
+            </button>
+            <button class="btn btn-primary" (click)="saveRental()">
+              {{ isEditingRental() ? "Update" : "Create" }} Rental
+            </button>
+          </div>
+        </div>
+      </dialog>
+      }
+    </div>
+    }
+
+    <!-- Reports Tab -->
+    @if (activeTab() === 'reports' && !isLoading()) {
+    <div class="space-y-6">
+      <h2 class="text-2xl font-semibold mb-4 text-base-content">
+        Rental Reports by DNI
+      </h2>
+
+      <!-- Search Form -->
+      <div class="flex gap-4 mb-8">
+        <div class="form-control flex-1">
+          <label class="label mb-4">
+            <span class="label-text">Customer DNI</span>
+          </label>
+          <input
+            type="text"
+            class="input input-bordered"
+            placeholder="Enter customer DNI..."
+            [(ngModel)]="searchDni"
+          />
+        </div>
+        <div class="flex items-end gap-2">
+          <button class="btn btn-primary" (click)="searchRentalsByDni()">
+            🔍 Search
+          </button>
+          <button class="btn btn-ghost" (click)="clearReport()">Clear</button>
+        </div>
+      </div>
+
+      <!-- Report Results -->
+      @if (rentalReport()) {
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <h3 class="card-title">Rental Report</h3>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <p class="mb-2">Customer DNI:</p>
+              <p class="font-semibold">
+                {{ rentalReport()?.customerDni }}
+              </p>
+            </div>
+            <div>
+              <p class="mb-2">Customer Name:</p>
+              <p class="font-semibold">
+                {{ rentalReport()?.customerName }}
+              </p>
+            </div>
+          </div>
+
+          @if (rentalReport() && rentalReport()!.books.length === 0) {
+          <div class="text-base-content/70">
+            No rental history found for this customer.
+          </div>
+          } @if (rentalReport() && rentalReport()!.books.length > 0) {
+          <div class="overflow-x-auto">
+            <table class="table table-zebra">
+              <thead>
+                <tr>
+                  <th>Book Title</th>
+                  <th>Author</th>
+                  <th>Rental Date</th>
+                  <th>Return Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (book of rentalReport()?.books; track $index) {
+                <tr>
+                  <td>{{ book.title }}</td>
+                  <td>{{ book.author }}</td>
+                  <td>{{ book.rentalDate | date : "short" }}</td>
+                  <td>
+                    {{
+                      book.returnDate
+                        ? (book.returnDate | date : "short")
+                        : "Not returned"
+                    }}
+                  </td>
+                  <td>
+                    <span
+                      class="badge"
+                      [class.badge-success]="book.isReturned"
+                      [class.badge-warning]="!book.isReturned"
+                    >
+                      {{ book.isReturned ? "Returned" : "Active" }}
+                    </span>
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+    }
+  </div>
+</div>

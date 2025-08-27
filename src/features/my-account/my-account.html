@@ -132,10 +132,10 @@
             </div>
             <div class="mt-3 text-sm text-base-content/60">
               <p>Total Orders: {{ customerProfile()!.totalRentalOrders }}</p>
-              <p>Active Rentals: {{ customerProfile()!.activeRentals }}</p>
+              <p>Active Books: {{ customerProfile()!.activeRentals }}</p>
               @if (customerProfile()!.overdueRentals > 0) {
               <p class="text-error">
-                Overdue: {{ customerProfile()!.overdueRentals }}
+                Overdue Books: {{ customerProfile()!.overdueRentals }}
               </p>
               }
             </div>

@@ -1,0 +1,205 @@
+/* Admin Panel Specific Styles */
+.admin-container {
+  min-height: 100vh;
+}
+
+/* Tab Styling */
+.tab {
+  transition: all 0.3s ease;
+}
+
+.tab:hover {
+  background-color: hsl(var(--b2));
+}
+
+.tab-active {
+  background-color: hsl(var(--p)) !important;
+  color: hsl(var(--pc)) !important;
+  border-radius: 0.5rem;
+}
+
+/* Table Styling - uses theme variables */
+.table {
+  background-color: hsl(var(--b1));
+}
+
+.table th {
+  background-color: hsl(var(--b2));
+  color: hsl(var(--bc));
+  font-weight: 600;
+  border-bottom: 2px solid hsl(var(--b3));
+}
+
+.table td {
+  color: hsl(var(--bc));
+  border-bottom: 1px solid hsl(var(--b2));
+}
+
+.table tbody tr:hover {
+  background-color: hsl(var(--b2));
+}
+
+/* Button Styling */
+.btn-primary {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.btn-info {
+  background-color: #06b6d4;
+  border-color: #06b6d4;
+  color: white;
+}
+
+.btn-info:hover {
+  background-color: #0891b2;
+  border-color: #0891b2;
+}
+
+.btn-error {
+  background-color: #ef4444;
+  border-color: #ef4444;
+  color: white;
+}
+
+.btn-error:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+}
+
+/* Modal Styling - uses theme variables */
+.modal-box {
+  background-color: hsl(var(--b1));
+  border: 1px solid hsl(var(--b2));
+}
+
+/* Form Controls - uses theme variables */
+.input {
+  background-color: hsl(var(--b2));
+  border-color: hsl(var(--b3));
+  color: hsl(var(--bc));
+}
+
+.input:focus {
+  border-color: hsl(var(--p));
+  box-shadow: 0 0 0 3px hsl(var(--p) / 0.1);
+}
+
+.textarea {
+  background-color: hsl(var(--b2));
+  border-color: hsl(var(--b3));
+  color: hsl(var(--bc));
+}
+
+.textarea:focus {
+  border-color: hsl(var(--p));
+  box-shadow: 0 0 0 3px hsl(var(--p) / 0.1);
+}
+
+.label-text {
+  color: hsl(var(--bc));
+  font-weight: 500;
+}
+
+/* Card Styling - uses theme variables */
+.card {
+  background-color: hsl(var(--b1));
+  border: 1px solid hsl(var(--b2));
+}
+
+.card-title {
+  color: hsl(var(--bc));
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Badge Styling */
+.badge-success {
+  background-color: #10b981;
+  color: white;
+}
+
+.badge-error {
+  background-color: #ef4444;
+  color: white;
+}
+
+.badge-warning {
+  background-color: #f59e0b;
+  color: white;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  color: #3b82f6;
+}
+
+/* Header Styling - uses theme variables */
+h1,
+h2,
+h3 {
+  color: hsl(var(--bc));
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+h2 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .tabs {
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    flex: 1;
+    min-width: auto;
+  }
+
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .overflow-x-auto {
+    font-size: 0.875rem;
+  }
+}
+
+/* SweetAlert Dark Theme Support */
+.dark-swal-popup {
+  background-color: #1f2937 !important;
+  border: 1px solid #374151 !important;
+}
+
+.dark-swal-title {
+  color: #f3f4f6 !important;
+}
+
+/* Search form styling */
+.form-control label {
+  margin-bottom: 0.5rem;
+}
+
+/* Action buttons spacing */
+.flex.gap-2 > * {
+  margin: 0;
+}
