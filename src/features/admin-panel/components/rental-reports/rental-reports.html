@@ -1,0 +1,101 @@
+<div class="space-y-6">
+  <h2 class="text-2xl font-semibold mb-4 text-base-content">
+    Rental Reports by DNI
+  </h2>
+
+  <!-- Search Form -->
+  <div class="flex gap-4 mb-8">
+    <div class="form-control flex-1">
+      <label class="label mb-4">
+        <span class="label-text">Customer DNI</span>
+      </label>
+      <input
+        type="text"
+        class="input input-bordered"
+        placeholder="Enter customer DNI..."
+        [(ngModel)]="searchDni"
+      />
+    </div>
+    <div class="flex items-end gap-2">
+      <button class="btn btn-primary" (click)="searchRentalsByDni()">
+        🔍 Search
+      </button>
+      <button class="btn btn-ghost" (click)="clearReport()">Clear</button>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  @if (isLoading()) {
+  <div class="flex justify-center py-8">
+    <span class="loading loading-spinner loading-lg"></span>
+  </div>
+  }
+
+  <!-- Report Results -->
+  @if (rentalReport() && !isLoading()) {
+  <div class="card bg-base-100 shadow-xl">
+    <div class="card-body">
+      <h3 class="card-title">Rental Report</h3>
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <p class="mb-2">Customer DNI:</p>
+          <p class="font-semibold">
+            {{ rentalReport()?.customerDni }}
+          </p>
+        </div>
+        <div>
+          <p class="mb-2">Customer Name:</p>
+          <p class="font-semibold">
+            {{ rentalReport()?.customerName }}
+          </p>
+        </div>
+      </div>
+
+      @if (rentalReport() && rentalReport()!.books.length === 0) {
+      <div class="text-base-content/70">
+        No rental history found for this customer.
+      </div>
+      } @if (rentalReport() && rentalReport()!.books.length > 0) {
+      <div class="overflow-x-auto">
+        <table class="table table-zebra">
+          <thead>
+            <tr>
+              <th>Book Title</th>
+              <th>Author</th>
+              <th>Rental Date</th>
+              <th>Return Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (book of rentalReport()?.books; track $index) {
+            <tr>
+              <td>{{ book.title }}</td>
+              <td>{{ book.author }}</td>
+              <td>{{ book.rentalDate | date : "short" }}</td>
+              <td>
+                {{
+                  book.returnDate
+                    ? (book.returnDate | date : "short")
+                    : "Not returned"
+                }}
+              </td>
+              <td>
+                <span
+                  class="badge"
+                  [class.badge-success]="book.isReturned"
+                  [class.badge-warning]="!book.isReturned"
+                >
+                  {{ book.isReturned ? "Returned" : "Active" }}
+                </span>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      }
+    </div>
+  </div>
+  }
+</div>

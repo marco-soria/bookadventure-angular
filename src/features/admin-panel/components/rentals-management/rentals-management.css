@@ -1,0 +1,50 @@
+/* Rentals Management Component Styles */
+.space-y-6 > * + * {
+  margin-top: 1.5rem;
+}
+
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+.space-y-2 > * + * {
+  margin-top: 0.5rem;
+}
+
+/* Table styling */
+.table {
+  width: 100%;
+}
+
+.table th {
+  color: hsl(var(--bc));
+  font-weight: 600;
+}
+
+.table td {
+  color: hsl(var(--bc));
+}
+
+/* Modal styling */
+.modal-box.max-w-4xl {
+  max-width: 56rem;
+}
+
+/* Button group styling */
+.flex.gap-2 > * + * {
+  margin-left: 0.5rem;
+}
+
+/* Book selection area */
+.max-h-48 {
+  max-height: 12rem;
+}
+
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
+/* Label styling for checkboxes */
+.label.justify-start {
+  justify-content: flex-start;
+}

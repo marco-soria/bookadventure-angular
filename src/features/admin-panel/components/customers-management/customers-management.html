@@ -1,0 +1,166 @@
+<div class="space-y-6">
+  <div class="flex justify-between items-center">
+    <h2 class="text-2xl font-semibold text-base-content">
+      Customers Management
+    </h2>
+    <button class="btn btn-primary" (click)="openForm()">
+      <svg
+        class="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 4v16m8-8H4"
+        ></path>
+      </svg>
+      Add Customer
+    </button>
+  </div>
+
+  <!-- Loading Spinner -->
+  @if (isLoading()) {
+  <div class="flex justify-center py-8">
+    <span class="loading loading-spinner loading-lg"></span>
+  </div>
+  }
+
+  <!-- Customers Table -->
+  @if (!isLoading()) {
+  <div class="overflow-x-auto">
+    <table class="table table-zebra bg-base-100">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>DNI</th>
+          <th>Age</th>
+          <th>Phone</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (customer of filteredCustomers(); track customer.id) {
+        <tr>
+          <td>{{ customer.id }}</td>
+          <td>{{ customer.firstName }} {{ customer.lastName }}</td>
+          <td>{{ customer.email }}</td>
+          <td>{{ customer.dni }}</td>
+          <td>{{ customer.age }}</td>
+          <td>{{ customer.phoneNumber || "N/A" }}</td>
+          <td>
+            <div class="flex gap-2">
+              <button class="btn btn-sm btn-info" (click)="openForm(customer)">
+                Edit
+              </button>
+              <button
+                class="btn btn-sm btn-error"
+                (click)="delete(customer.id)"
+              >
+                Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+        } @empty {
+        <tr>
+          <td colspan="7" class="text-center">No customers found</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+
+  <!-- Customer Form Modal -->
+  @if (showForm()) {
+  <dialog class="modal modal-open">
+    <div class="modal-box bg-base-100">
+      <h3 class="font-bold text-lg mb-4 text-base-content">
+        {{ editingItem() ? "Edit Customer" : "Add New Customer" }}
+      </h3>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">First Name *</span>
+          </label>
+          <input
+            type="text"
+            class="input input-bordered"
+            [(ngModel)]="form().firstName"
+          />
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Last Name *</span>
+          </label>
+          <input
+            type="text"
+            class="input input-bordered"
+            [(ngModel)]="form().lastName"
+          />
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Email *</span>
+          </label>
+          <input
+            type="email"
+            class="input input-bordered"
+            [(ngModel)]="form().email"
+          />
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">DNI *</span>
+          </label>
+          <input
+            type="text"
+            class="input input-bordered"
+            [(ngModel)]="form().dni"
+          />
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Age *</span>
+          </label>
+          <input
+            type="number"
+            min="18"
+            max="120"
+            class="input input-bordered"
+            [(ngModel)]="form().age"
+          />
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Phone Number</span>
+          </label>
+          <input
+            type="tel"
+            class="input input-bordered"
+            [(ngModel)]="form().phoneNumber"
+          />
+        </div>
+      </div>
+
+      <div class="modal-action">
+        <button class="btn" (click)="closeForm()">Cancel</button>
+        <button class="btn btn-primary" (click)="save()">
+          {{ editingItem() ? "Update" : "Create" }} Customer
+        </button>
+      </div>
+    </div>
+  </dialog>
+  }
+</div>

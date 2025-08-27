@@ -1,0 +1,73 @@
+/* Rental Reports Component Styles */
+.space-y-6 > * + * {
+  margin-top: 1.5rem;
+}
+
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.grid.grid-cols-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+/* Form styling */
+.form-control.flex-1 {
+  flex: 1;
+}
+
+.flex.gap-4 > * + * {
+  margin-left: 1rem;
+}
+
+.flex.gap-2 > * + * {
+  margin-left: 0.5rem;
+}
+
+.flex.items-end {
+  align-items: flex-end;
+}
+
+/* Table styling */
+.table {
+  width: 100%;
+}
+
+.table th {
+  color: hsl(var(--bc));
+  font-weight: 600;
+}
+
+.table td {
+  color: hsl(var(--bc));
+}
+
+/* Card styling */
+.card {
+  background-color: hsl(var(--b1));
+}
+
+.card-title {
+  color: hsl(var(--bc));
+}
+
+/* Badge styling */
+.badge-success {
+  background-color: hsl(var(--su));
+  color: hsl(var(--suc));
+}
+
+.badge-warning {
+  background-color: hsl(var(--wa));
+  color: hsl(var(--wac));
+}

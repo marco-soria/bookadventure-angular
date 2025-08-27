@@ -1,0 +1,196 @@
+<div class="space-y-6">
+  <div class="flex justify-between items-center">
+    <h2 class="text-2xl font-semibold text-base-content">Books Management</h2>
+    <button class="btn btn-primary" (click)="openForm()">
+      <svg
+        class="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 4v16m8-8H4"
+        ></path>
+      </svg>
+      Add Book
+    </button>
+  </div>
+
+  <!-- Loading Spinner -->
+  @if (isLoading()) {
+  <div class="flex justify-center py-8">
+    <span class="loading loading-spinner loading-lg"></span>
+  </div>
+  }
+
+  <!-- Books Table -->
+  @if (!isLoading()) {
+  <div class="overflow-x-auto">
+    <table class="table table-zebra bg-base-100">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Genre</th>
+          <th>ISBN</th>
+          <th>Stock</th>
+          <th>Available</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (book of filteredBooks(); track book.id) {
+        <tr>
+          <td>{{ book.id }}</td>
+          <td>{{ book.title }}</td>
+          <td>{{ book.author }}</td>
+          <td>{{ book.genre }}</td>
+          <td>{{ book.isbn }}</td>
+          <td>{{ book.stock }}</td>
+          <td>
+            <div
+              class="badge"
+              [class]="book.isAvailable ? 'badge-success' : 'badge-error'"
+            >
+              {{ book.isAvailable ? "Yes" : "No" }}
+            </div>
+          </td>
+          <td>
+            <div class="flex gap-2">
+              <button class="btn btn-sm btn-info" (click)="openForm(book)">
+                Edit
+              </button>
+              <button class="btn btn-sm btn-error" (click)="delete(book.id)">
+                Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+        } @empty {
+        <tr>
+          <td colspan="8" class="text-center">No books found</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+
+  <!-- Book Form Modal -->
+  @if (showForm()) {
+  <dialog class="modal modal-open">
+    <div class="modal-box bg-base-100">
+      <h3 class="font-bold text-lg mb-4 text-base-content">
+        {{ editingItem() ? "Edit Book" : "Add New Book" }}
+      </h3>
+
+      <div class="space-y-4">
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Title *</span>
+          </label>
+          <input
+            type="text"
+            class="input input-bordered"
+            [(ngModel)]="form().title"
+          />
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Author *</span>
+          </label>
+          <input
+            type="text"
+            class="input input-bordered"
+            [(ngModel)]="form().author"
+          />
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">ISBN *</span>
+          </label>
+          <input
+            type="text"
+            class="input input-bordered"
+            [(ngModel)]="form().isbn"
+          />
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Description</span>
+          </label>
+          <textarea
+            class="textarea textarea-bordered"
+            rows="3"
+            [(ngModel)]="form().description"
+          >
+          </textarea>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Stock *</span>
+          </label>
+          <input
+            type="number"
+            min="0"
+            class="input input-bordered"
+            [(ngModel)]="form().stock"
+          />
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Genre *</span>
+          </label>
+          <select
+            class="select select-bordered w-full"
+            [(ngModel)]="form().genreId"
+          >
+            <option value="0">Select a genre</option>
+            @for (genre of genres(); track genre.id) {
+            <option [value]="genre.id">{{ genre.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Image URL</span>
+          </label>
+          <input
+            type="url"
+            class="input input-bordered"
+            [(ngModel)]="form().imageUrl"
+          />
+        </div>
+
+        <div class="form-control">
+          <label class="label cursor-pointer">
+            <span class="label-text">Available</span>
+            <input
+              type="checkbox"
+              class="checkbox checkbox-primary"
+              [(ngModel)]="form().isAvailable"
+            />
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-action">
+        <button class="btn" (click)="closeForm()">Cancel</button>
+        <button class="btn btn-primary" (click)="save()">
+          {{ editingItem() ? "Update" : "Create" }} Book
+        </button>
+      </div>
+    </div>
+  </dialog>
+  }
+</div>

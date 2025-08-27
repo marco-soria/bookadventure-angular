@@ -1,0 +1,34 @@
+/* Customers Management Component Styles */
+.space-y-6 > * + * {
+  margin-top: 1.5rem;
+}
+
+.grid.grid-cols-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+/* Table styling */
+.table {
+  width: 100%;
+}
+
+.table th {
+  color: hsl(var(--bc));
+  font-weight: 600;
+}
+
+.table td {
+  color: hsl(var(--bc));
+}
+
+/* Modal styling */
+.modal-box {
+  max-width: 700px;
+}
+
+/* Button group styling */
+.flex.gap-2 > * + * {
+  margin-left: 0.5rem;
+}

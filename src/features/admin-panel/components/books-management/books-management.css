@@ -1,0 +1,36 @@
+/* Books Management Component Styles */
+.space-y-6 > * + * {
+  margin-top: 1.5rem;
+}
+
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+.space-y-2 > * + * {
+  margin-top: 0.5rem;
+}
+
+/* Table styling */
+.table {
+  width: 100%;
+}
+
+.table th {
+  color: hsl(var(--bc));
+  font-weight: 600;
+}
+
+.table td {
+  color: hsl(var(--bc));
+}
+
+/* Modal styling */
+.modal-box {
+  max-width: 600px;
+}
+
+/* Button group styling */
+.flex.gap-2 > * + * {
+  margin-left: 0.5rem;
+}
