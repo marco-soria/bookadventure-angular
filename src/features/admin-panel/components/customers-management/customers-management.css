@@ -32,3 +32,25 @@
 .flex.gap-2 > * + * {
   margin-left: 0.5rem;
 }
+
+/* Deleted row styling - only apply opacity to text elements, not buttons */
+.deleted-row td:not(:last-child) {
+  opacity: 0.6;
+}
+
+/* Restore button in deleted rows should be fully visible */
+.deleted-row .restore-btn {
+  opacity: 1 !important;
+}
+
+/* Button styling */
+.btn-success {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+  background-color: #059669;
+  border-color: #059669;
+}

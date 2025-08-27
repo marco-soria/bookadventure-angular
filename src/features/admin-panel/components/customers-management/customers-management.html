@@ -108,7 +108,7 @@
         </thead>
         <tbody>
           @for (customer of deletedCustomers(); track customer.id) {
-          <tr class="opacity-60">
+          <tr class="deleted-row">
             <td>{{ customer.id }}</td>
             <td>{{ customer.firstName }} {{ customer.lastName }}</td>
             <td>{{ customer.email }}</td>
@@ -120,7 +120,7 @@
             </td>
             <td>
               <button
-                class="btn btn-sm btn-success"
+                class="btn btn-sm btn-success restore-btn"
                 (click)="restore(customer.id)"
               >
                 Restore

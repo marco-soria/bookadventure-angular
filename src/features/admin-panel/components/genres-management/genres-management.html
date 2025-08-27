@@ -40,7 +40,7 @@
       </thead>
       <tbody>
         @for (genre of genres(); track genre.id) {
-        <tr [class]="!genre.status ? 'opacity-60' : ''">
+        <tr [class]="!genre.status ? 'deleted-row' : ''">
           <td>{{ genre.id }}</td>
           <td>{{ genre.name }}</td>
           <td>
@@ -69,10 +69,10 @@
                 Delete
               </button>
               <button
-                class="btn btn-sm btn-success"
+                class="btn btn-sm btn-success restore-btn"
                 (click)="restore(genre.id)"
                 [disabled]="genre.status"
-                [class.opacity-50]="genre.status"
+                [class.disabled-restore]="genre.status"
               >
                 Restore
               </button>

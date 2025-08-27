@@ -101,3 +101,19 @@
 .btn-success:not(:disabled) {
   opacity: 1 !important;
 }
+
+/* Deleted row styling - only apply opacity to text elements, not buttons */
+.deleted-row td:not(:last-child) {
+  opacity: 0.6;
+}
+
+/* Disabled restore button styling */
+.restore-btn.disabled-restore {
+  opacity: 0.5 !important;
+  cursor: not-allowed;
+}
+
+/* Active restore button in deleted rows should be fully visible */
+.deleted-row .restore-btn:not(.disabled-restore) {
+  opacity: 1 !important;
+}
