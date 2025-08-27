@@ -187,11 +187,18 @@
         >
           <div class="avatar placeholder">
             <div
-              class="bg-neutral text-neutral-content rounded-full w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center"
+              class="bg-neutral text-neutral-content rounded-full w-8 h-8 lg:w-10 lg:h-10"
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
             >
-              <span class="text-sm lg:text-lg font-medium">{{
-                firstName().charAt(0)
-              }}</span>
+              <span
+                class="text-sm lg:text-lg font-medium"
+                style="line-height: 1; display: block"
+                >{{ firstName().charAt(0) }}</span
+              >
             </div>
           </div>
         </div>
