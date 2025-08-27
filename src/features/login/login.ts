@@ -49,13 +49,8 @@ export class Login {
       this.authService.login(credentials).subscribe({
         next: (response) => {
           if (response.success) {
-            // Redirigir según el rol
-            const user = this.authService.user();
-            if (user?.roles?.includes('admin')) {
-              this.router.navigate(['/admin']);
-            } else {
-              this.router.navigate(['/']);
-            }
+            // Check for pending rental after successful login
+            this.handlePendingRental();
           }
         },
         error: (error) => {
@@ -80,6 +75,36 @@ export class Login {
       const control = this.loginForm.get(key);
       control?.markAsTouched();
     });
+  }
+
+  private handlePendingRental(): void {
+    const pendingRental = sessionStorage.getItem('pendingRental');
+    if (pendingRental) {
+      try {
+        const rentalInfo = JSON.parse(pendingRental);
+        sessionStorage.removeItem('pendingRental');
+
+        // Navigate back to the book detail page
+        this.router.navigate([rentalInfo.returnUrl || '/']);
+      } catch (error) {
+        console.error('Error parsing pending rental info:', error);
+        // Fallback navigation
+        const user = this.authService.user();
+        if (user?.roles?.includes('admin')) {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/']);
+        }
+      }
+    } else {
+      // Normal login flow - redirect based on role
+      const user = this.authService.user();
+      if (user?.roles?.includes('admin')) {
+        this.router.navigate(['/admin']);
+      } else {
+        this.router.navigate(['/']);
+      }
+    }
   }
 
   // Getters para validación

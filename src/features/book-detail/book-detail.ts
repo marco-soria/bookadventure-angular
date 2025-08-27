@@ -1,12 +1,13 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BookService } from '../../core/services/book.service';
+import { RentBookDialogComponent } from '../../shared/components/rent-book-dialog/rent-book-dialog';
 import { Book } from '../../types/book';
 
 @Component({
   selector: 'app-book-detail',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, RentBookDialogComponent],
   templateUrl: './book-detail.html',
   styleUrl: './book-detail.css',
 })
@@ -18,6 +19,7 @@ export class BookDetailComponent implements OnInit {
   book = signal<Book | null>(null);
   isLoading = signal(false);
   error = signal<string | null>(null);
+  showRentDialog = signal(false);
 
   ngOnInit(): void {
     const bookId = this.route.snapshot.paramMap.get('id');
@@ -53,15 +55,9 @@ export class BookDetailComponent implements OnInit {
   }
 
   rentBook(): void {
-    if (this.book()?.id) {
-      // TODO: Implement rental functionality
-      console.log('Renting book:', this.book()?.title);
-      // Here you would typically call a rental service
-      alert(
-        `Renting functionality will be implemented soon for: ${
-          this.book()?.title
-        }`
-      );
+    const currentBook = this.book();
+    if (currentBook) {
+      this.showRentDialog.set(true);
     }
   }
 
