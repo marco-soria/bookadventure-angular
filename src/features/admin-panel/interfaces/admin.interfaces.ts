@@ -34,20 +34,48 @@ export interface Customer {
 
 export interface RentalOrder {
   id: number;
-  customerId: number;
-  customerName: string;
+  orderNumber: string;
   orderDate: string;
   returnDate?: string;
-  status: number;
-  details: RentalDetail[];
+  dueDate: string;
+  orderStatus: string;
+  notes?: string;
+  status: string;
+  createdAt: string;
+  updatedAt?: string;
+  // Customer Information
+  customerId: number;
+  customerName: string;
+  customerEmail: string;
+  customerDNI: string;
+  // Order Details
+  details: RentalOrderDetail[];
+  // Summary Information
+  totalBooks: number;
+  activeBooks: number;
+  returnedBooks: number;
+  hasOverdueBooks: boolean;
 }
 
-export interface RentalDetail {
+export interface RentalOrderDetail {
   id: number;
-  bookTitle: string;
-  rentalDate: string;
+  quantity: number;
+  rentalDays: number;
+  dueDate: string;
   returnDate?: string;
   isReturned: boolean;
+  isOverdue: boolean;
+  notes?: string;
+  // Book Information
+  bookId: number;
+  bookTitle: string;
+  bookAuthor: string;
+  bookISBN?: string;
+  bookImageUrl?: string;
+  bookGenre?: string;
+  // Rental Order Information
+  rentalOrderId: number;
+  rentalOrderNumber: string;
 }
 
 export interface RentalReport {

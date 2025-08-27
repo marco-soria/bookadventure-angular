@@ -319,6 +319,33 @@ export class AdminService {
     return response;
   }
 
+  async getRentalDetails(id: number) {
+    try {
+      const response = await firstValueFrom(
+        this.http.get<any>(`${this.baseUrl}rentalorders/${id}`)
+      );
+      return response;
+    } catch (error) {
+      console.error('Error loading rental details:', error);
+      return { success: false, errorMessage: 'Error loading rental details' };
+    }
+  }
+
+  async returnPartialBooks(rentalId: number, bookIds: number[]) {
+    try {
+      const response = await firstValueFrom(
+        this.http.post<any>(
+          `${this.baseUrl}rentalorders/${rentalId}/return`,
+          bookIds
+        )
+      );
+      return response;
+    } catch (error) {
+      console.error('Error returning books:', error);
+      return { success: false, errorMessage: 'Error returning books' };
+    }
+  }
+
   // === UTILITY METHODS ===
   showSuccess(message: string) {
     Swal.fire({
