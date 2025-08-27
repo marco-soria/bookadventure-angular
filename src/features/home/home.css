@@ -87,19 +87,12 @@
   padding: 10px 16px;
   border: 1px solid var(--border-color, #ddd);
   border-radius: 6px;
-  background-color: var(--bg-secondary, white);
-  color: var(--text-secondary, #666);
+  color: white;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
-}
-
-.clear-filters-btn:hover:not(:disabled) {
-  background-color: var(--danger-color, #dc3545);
-  color: white;
-  border-color: var(--danger-color, #dc3545);
 }
 
 .clear-filters-btn:disabled {
@@ -199,7 +192,6 @@
 }
 
 .book-card {
-  background: var(--bg-card, #fafafa);
   border: 1px solid var(--border-color, #e5e5e5);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);

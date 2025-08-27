@@ -44,7 +44,7 @@
         <!-- Clear Filters -->
         <div class="filter-group">
           <button
-            class="clear-filters-btn"
+            class="clear-filters-btn bg-blue-600 hover:bg-blue-700"
             (click)="clearFilters()"
             [disabled]="selectedGenre() === null && sortOrder() === 'asc'"
           >
@@ -114,7 +114,7 @@
     @if (books().length > 0) {
     <div class="books-grid">
       @for (book of books(); track book.id) {
-      <div class="book-card">
+      <div class="book-card bg-zinc-200">
         <div class="book-image-container">
           <img
             [src]="book.imageUrl || 'booknotfound.png'"

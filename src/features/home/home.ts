@@ -24,7 +24,7 @@ export class Home implements OnInit {
   error = signal<string | null>(null);
 
   // Filters
-  selectedGenre = signal<number | null>(null);
+  selectedGenre = signal<number | string | null>(null);
   sortOrder = signal<'asc' | 'desc'>('asc');
   searchFromNavbar = signal<string>('');
 
@@ -77,27 +77,51 @@ export class Home implements OnInit {
 
     let request;
 
+    // Debug logging
+    console.log('Loading books with filters:', {
+      selectedGenre: this.selectedGenre(),
+      sortOrder: this.sortOrder(),
+      searchFromNavbar: this.searchFromNavbar(),
+      currentPage: this.currentPage(),
+    });
+
+    // Helper function to check if genre is effectively null
+    const isGenreNull = () => {
+      const genre = this.selectedGenre();
+      return (
+        genre === null ||
+        genre === undefined ||
+        genre === 'null' ||
+        genre === '' ||
+        (typeof genre === 'string' && genre === 'null')
+      );
+    };
+
     // Determine which API endpoint to use based on filters
     if (this.searchFromNavbar()) {
-      // Search from navbar
+      // Search from navbar - use search endpoint
+      console.log('Using search endpoint');
       const searchParams: BookSearchDto = {
         page: this.currentPage(),
         recordsPerPage: this.pageSize(),
         search: this.searchFromNavbar(),
         sortBy: 'title',
-        sortDescending: false,
+        sortDescending: this.sortOrder() === 'desc',
       };
       request = this.bookService.getBooks(searchParams);
-    } else if (this.selectedGenre()) {
-      // Genre + alphabetical sort (always apply sort since we have default)
+    } else if (!isGenreNull()) {
+      // Specific genre selected + alphabetical sort
+      console.log('Using genre-specific endpoint', this.selectedGenre());
       const descending = this.sortOrder() === 'desc';
+      const genreId = Number(this.selectedGenre());
       request = this.bookService.getBooksByGenreAlphabetical(
-        this.selectedGenre()!,
+        genreId,
         descending,
         pagination
       );
     } else {
-      // Alphabetical sort only (default behavior)
+      // No genre selected (All Genres) + alphabetical sort
+      console.log('Using general alphabetical endpoint', this.sortOrder());
       const descending = this.sortOrder() === 'desc';
       request = this.bookService.getBooksAlphabetical(descending, pagination);
     }
@@ -110,31 +134,56 @@ export class Home implements OnInit {
           this.totalPages.set(
             Math.ceil((response.totalRecords || 0) / this.pageSize())
           );
+          console.log('Books loaded successfully:', response.data.length);
         } else {
           this.error.set(response.errorMessage || 'Failed to load books');
+          console.error('API returned error:', response.errorMessage);
         }
         this.isLoading.set(false);
       },
       error: (err) => {
         this.error.set(err.message || 'Failed to load books');
+        console.error('Request failed:', err);
         this.isLoading.set(false);
       },
     });
   }
 
   onGenreChange(): void {
+    // Normalize the genre value
+    const genre = this.selectedGenre();
+    if (
+      genre === 'null' ||
+      genre === '' ||
+      genre === null ||
+      genre === undefined
+    ) {
+      this.selectedGenre.set(null);
+    } else if (typeof genre === 'string' && genre !== '') {
+      this.selectedGenre.set(Number(genre));
+    }
+
     this.currentPage.set(1);
+    // Clear any search from navbar when genre filter is applied
+    if (this.selectedGenre() !== null) {
+      this.searchFromNavbar.set('');
+    }
     this.loadBooks();
   }
 
   onSortChange(): void {
     this.currentPage.set(1);
+    // Clear any search from navbar when sort is applied
+    if (this.searchFromNavbar()) {
+      this.searchFromNavbar.set('');
+    }
     this.loadBooks();
   }
 
   clearFilters(): void {
     this.selectedGenre.set(null);
     this.sortOrder.set('asc');
+    this.searchFromNavbar.set('');
     this.currentPage.set(1);
     this.loadBooks();
   }
