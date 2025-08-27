@@ -1,7 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import Swal from 'sweetalert2';
 import { AuthService } from '../../core/services/auth-service';
 import {
   CustomerProfile,
@@ -178,55 +177,18 @@ export class MyAccount implements OnInit {
           // Reload the profile to get updated data
           this.loadCustomerProfile();
           this.isEditing.set(false);
-          Swal.fire({
-            title: 'Success!',
-            text: 'Profile updated successfully!',
-            icon: 'success',
-            confirmButtonText: 'Great!',
-            confirmButtonColor: '#28a745',
-            background: '#1f2937',
-            color: '#f9fafb',
-            customClass: {
-              popup: 'dark-swal-popup',
-              title: 'dark-swal-title',
-              htmlContainer: 'dark-swal-content',
-            },
-          });
+          this.showSuccess('Profile updated successfully!');
         } else {
-          Swal.fire({
-            title: 'Error!',
-            text:
-              'Failed to update profile: ' +
-              (response.errorMessage || 'Unknown error'),
-            icon: 'error',
-            confirmButtonText: 'OK',
-            confirmButtonColor: '#dc3545',
-            background: '#1f2937',
-            color: '#f9fafb',
-            customClass: {
-              popup: 'dark-swal-popup',
-              title: 'dark-swal-title',
-              htmlContainer: 'dark-swal-content',
-            },
-          });
+          this.showError(
+            'Failed to update profile: ' +
+              (response.errorMessage || 'Unknown error')
+          );
         }
       },
       error: (error) => {
-        Swal.fire({
-          title: 'Error!',
-          text:
-            'Failed to update profile: ' + (error.message || 'Unknown error'),
-          icon: 'error',
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#dc3545',
-          background: '#1f2937',
-          color: '#f9fafb',
-          customClass: {
-            popup: 'dark-swal-popup',
-            title: 'dark-swal-title',
-            htmlContainer: 'dark-swal-content',
-          },
-        });
+        this.showError(
+          'Failed to update profile: ' + (error.message || 'Unknown error')
+        );
       },
     });
   }
@@ -301,5 +263,32 @@ export class MyAccount implements OnInit {
       default:
         return 'badge-neutral';
     }
+  }
+
+  // Métodos privados para SweetAlert2 con importación dinámica
+  private async showSuccess(message: string) {
+    const { default: Swal } = await import('sweetalert2');
+    return Swal.fire({
+      title: 'Success!',
+      text: message,
+      icon: 'success',
+      confirmButtonText: 'Great!',
+      confirmButtonColor: '#28a745',
+      background: 'hsl(var(--b1))',
+      color: 'hsl(var(--bc))',
+    });
+  }
+
+  private async showError(message: string) {
+    const { default: Swal } = await import('sweetalert2');
+    return Swal.fire({
+      title: 'Error!',
+      text: message,
+      icon: 'error',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#dc3545',
+      background: 'hsl(var(--b1))',
+      color: 'hsl(var(--bc))',
+    });
   }
 }
