@@ -137,6 +137,30 @@
               </button>
               }
 
+              <!-- Edit Status button - only for non-deleted orders -->
+              @if (canEditStatus(rental)) {
+              <button
+                class="btn btn-sm btn-secondary"
+                title="Edit Status"
+                (click)="openStatusModal(rental)"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
+                </svg>
+                Status
+              </button>
+              }
+
               <!-- Restore button - only for deleted orders -->
               @if (canRestore(rental)) {
               <button
@@ -606,6 +630,68 @@
 
       <div class="modal-action">
         <button class="btn" (click)="closeDetailModal()">Close</button>
+      </div>
+    </div>
+  </dialog>
+  }
+
+  <!-- Status Edit Modal -->
+  @if (showStatusModal()) {
+  <dialog open class="modal">
+    <div class="modal-box max-w-md">
+      <h3 class="font-bold text-lg mb-4">Edit Rental Status</h3>
+
+      @if (statusEditingItem()) {
+      <div class="space-y-4">
+        <div>
+          <label class="label">
+            <span class="label-text">Rental Order:</span>
+          </label>
+          <div class="text-base font-medium">
+            #{{ statusEditingItem()!.orderNumber || statusEditingItem()!.id }} -
+            {{ statusEditingItem()!.customerName }}
+          </div>
+        </div>
+
+        <div>
+          <label class="label">
+            <span class="label-text">Current Status:</span>
+          </label>
+          <div
+            class="badge"
+            [class]="getOrderStatusClass(statusEditingItem()!)"
+          >
+            {{ formatOrderStatus(statusEditingItem()!) }}
+          </div>
+        </div>
+
+        <div>
+          <label class="label">
+            <span class="label-text">New Status:</span>
+          </label>
+          <select
+            class="select select-bordered w-full"
+            [(ngModel)]="selectedStatus"
+          >
+            @for (option of orderStatusOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      }
+
+      <div class="modal-action">
+        <button
+          class="btn btn-primary"
+          [disabled]="isLoading()"
+          (click)="updateStatus()"
+        >
+          @if (isLoading()) {
+          <span class="loading loading-spinner loading-sm"></span>
+          } Update Status
+        </button>
+        <button class="btn" (click)="closeStatusModal()">Cancel</button>
       </div>
     </div>
   </dialog>

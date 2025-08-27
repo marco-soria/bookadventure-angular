@@ -32,6 +32,24 @@ export interface Customer {
   status: string; // Changed from number to string to match backend CustomerResponseDto
 }
 
+// Order Status Enum
+export enum OrderStatus {
+  Pending = 1,
+  Active = 2,
+  Returned = 3,
+  Overdue = 4,
+  Cancelled = 5,
+}
+
+// Order Status Helper
+export const ORDER_STATUS_OPTIONS = [
+  { value: OrderStatus.Pending, label: 'Pending', class: 'badge-warning' },
+  { value: OrderStatus.Active, label: 'Active', class: 'badge-info' },
+  { value: OrderStatus.Returned, label: 'Returned', class: 'badge-success' },
+  { value: OrderStatus.Overdue, label: 'Overdue', class: 'badge-error' },
+  { value: OrderStatus.Cancelled, label: 'Cancelled', class: 'badge-neutral' },
+];
+
 export interface RentalOrder {
   id: number;
   orderNumber: string;

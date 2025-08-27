@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import {
   Book,
   Customer,
+  ORDER_STATUS_OPTIONS,
+  OrderStatus,
   RentalForm,
   RentalOrder,
 } from '../../interfaces/admin.interfaces';
@@ -25,8 +27,11 @@ export class RentalsManagement implements OnInit {
   isLoading = signal<boolean>(false);
   showForm = signal<boolean>(false);
   showDetailModal = signal<boolean>(false);
+  showStatusModal = signal<boolean>(false);
   editingItem = signal<RentalOrder | null>(null);
   selectedRentalDetails = signal<RentalOrder | null>(null);
+  statusEditingItem = signal<RentalOrder | null>(null);
+  selectedStatus = signal<number>(1);
   bookSearchTerm = signal<string>('');
 
   // Formulario
@@ -59,6 +64,9 @@ export class RentalsManagement implements OnInit {
         book.genreName.toLowerCase().includes(searchTerm)
     );
   });
+
+  // Order Status Options
+  orderStatusOptions = ORDER_STATUS_OPTIONS;
 
   async ngOnInit() {
     await this.loadData();
@@ -163,6 +171,65 @@ export class RentalsManagement implements OnInit {
   closeDetailModal() {
     this.showDetailModal.set(false);
     this.selectedRentalDetails.set(null);
+  }
+
+  openStatusModal(rental: RentalOrder) {
+    this.statusEditingItem.set(rental);
+    // Set current status as default
+    const currentStatus = this.getStatusValue(rental.orderStatus);
+    this.selectedStatus.set(currentStatus);
+    this.showStatusModal.set(true);
+  }
+
+  closeStatusModal() {
+    this.showStatusModal.set(false);
+    this.statusEditingItem.set(null);
+  }
+
+  async updateStatus() {
+    const rental = this.statusEditingItem();
+    const newStatus = this.selectedStatus();
+
+    if (!rental) return;
+
+    this.isLoading.set(true);
+    try {
+      const response = await this.adminService.updateRentalStatus(
+        rental.id,
+        newStatus
+      );
+      if (response.success) {
+        this.adminService.showSuccess('Rental status updated successfully');
+        await this.loadData();
+        this.closeStatusModal();
+      } else {
+        this.adminService.showError(
+          response.errorMessage || 'Error updating rental status'
+        );
+      }
+    } catch (error) {
+      console.error('Error updating rental status:', error);
+      this.adminService.showError('Error updating rental status');
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  private getStatusValue(orderStatus: string): number {
+    switch (orderStatus?.toLowerCase()) {
+      case 'pending':
+        return OrderStatus.Pending;
+      case 'active':
+        return OrderStatus.Active;
+      case 'returned':
+        return OrderStatus.Returned;
+      case 'overdue':
+        return OrderStatus.Overdue;
+      case 'cancelled':
+        return OrderStatus.Cancelled;
+      default:
+        return OrderStatus.Pending;
+    }
   }
 
   async returnBook(rentalId: number, bookId: number) {
@@ -282,6 +349,10 @@ export class RentalsManagement implements OnInit {
 
   canRestore(rental: RentalOrder): boolean {
     return this.isDeleted(rental);
+  }
+
+  canEditStatus(rental: RentalOrder): boolean {
+    return !this.isDeleted(rental);
   }
 
   isOrderCompletelyReturned(rental: RentalOrder): boolean {

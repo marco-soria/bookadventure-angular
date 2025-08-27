@@ -388,6 +388,36 @@ export class AdminService {
     }
   }
 
+  async updateRentalStatus(id: number, orderStatus: number) {
+    try {
+      const response = await firstValueFrom(
+        this.http.put<any>(`${this.baseUrl}rentalorders/${id}/status`, {
+          orderStatus: orderStatus,
+        })
+      );
+      return response;
+    } catch (error: any) {
+      console.error('Error updating rental status:', error);
+      let errorMessage = 'Error updating rental status';
+
+      if (error.status === 401) {
+        errorMessage = 'Unauthorized: Please check your login status';
+      } else if (error.status === 403) {
+        errorMessage =
+          'Forbidden: You do not have permission to update rental status';
+      } else if (error.status === 404) {
+        errorMessage = 'Rental order not found';
+      } else if (error.error?.errorMessage) {
+        errorMessage = error.error.errorMessage;
+      }
+
+      return {
+        success: false,
+        errorMessage: errorMessage,
+      };
+    }
+  }
+
   async getRentalDetails(id: number) {
     try {
       const response = await firstValueFrom(
