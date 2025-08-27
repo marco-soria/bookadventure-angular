@@ -31,6 +31,18 @@ export class CustomersManagement implements OnInit {
     confirmPassword: '',
   });
 
+  // Field touched tracking for validation
+  fieldTouched = signal<Record<string, boolean>>({
+    firstName: false,
+    lastName: false,
+    email: false,
+    documentNumber: false,
+    age: false,
+    phoneNumber: false,
+    password: false,
+    confirmPassword: false,
+  });
+
   // Computed properties
   activeCustomers = computed(() =>
     this.customers().filter((customer) => customer.status === 'Active')
@@ -91,6 +103,125 @@ export class CustomersManagement implements OnInit {
   closeForm() {
     this.showForm.set(false);
     this.editingItem.set(null);
+    // Reset touched fields when closing form
+    this.fieldTouched.set({
+      firstName: false,
+      lastName: false,
+      email: false,
+      documentNumber: false,
+      age: false,
+      phoneNumber: false,
+      password: false,
+      confirmPassword: false,
+    });
+  }
+
+  // Handle field blur events
+  onFieldBlur(fieldName: string) {
+    this.fieldTouched.update((touched) => ({
+      ...touched,
+      [fieldName]: true,
+    }));
+  }
+
+  // Individual field validations
+  getFieldError(fieldName: string): string | null {
+    const formData = this.form();
+    const editing = this.editingItem();
+
+    if (!this.fieldTouched()[fieldName]) {
+      return null;
+    }
+
+    switch (fieldName) {
+      case 'firstName':
+        if (!formData.firstName.trim()) {
+          return 'First name is required';
+        }
+        if (formData.firstName.trim().length < 2) {
+          return 'First name must be at least 2 characters';
+        }
+        return null;
+
+      case 'lastName':
+        if (!formData.lastName.trim()) {
+          return 'Last name is required';
+        }
+        if (formData.lastName.trim().length < 2) {
+          return 'Last name must be at least 2 characters';
+        }
+        return null;
+
+      case 'email':
+        if (!formData.email.trim()) {
+          return 'Email is required';
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+          return 'Please enter a valid email';
+        }
+        return null;
+
+      case 'documentNumber':
+        if (!formData.documentNumber.trim()) {
+          return 'Document number is required';
+        }
+        if (formData.documentNumber.trim().length < 8) {
+          return 'Document number must be at least 8 characters';
+        }
+        return null;
+
+      case 'age':
+        if (!formData.age) {
+          return 'Age is required';
+        }
+        if (formData.age < 18) {
+          return 'Age must be at least 18 years old';
+        }
+        if (formData.age > 120) {
+          return 'Age cannot exceed 120 years';
+        }
+        return null;
+
+      case 'phoneNumber':
+        if (formData.phoneNumber && formData.phoneNumber.trim()) {
+          const phoneRegex = /^[0-9+\-\s()]{8,15}$/;
+          if (!phoneRegex.test(formData.phoneNumber.trim())) {
+            return 'Please enter a valid phone number (8-15 digits)';
+          }
+        }
+        return null;
+
+      case 'password':
+        if (!editing) {
+          if (!formData.password) {
+            return 'Password is required';
+          }
+          if (formData.password.length < 6) {
+            return 'Password must be at least 6 characters long';
+          }
+        }
+        return null;
+
+      case 'confirmPassword':
+        if (!editing) {
+          if (!formData.confirmPassword) {
+            return 'Confirm password is required';
+          }
+          if (formData.password !== formData.confirmPassword) {
+            return 'Passwords do not match';
+          }
+        }
+        return null;
+
+      default:
+        return null;
+    }
+  }
+
+  // Check if field has error
+  hasFieldError(fieldName: string): boolean {
+    return this.getFieldError(fieldName) !== null;
   }
 
   async save() {

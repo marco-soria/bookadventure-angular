@@ -151,11 +151,19 @@
           <input
             type="text"
             class="input input-bordered"
+            [class.input-error]="hasFieldError('firstName')"
             [(ngModel)]="form().firstName"
-            placeholder="Enter first name"
+            (blur)="onFieldBlur('firstName')"
             required
             minlength="2"
           />
+          @if (hasFieldError('firstName')) {
+          <label class="label">
+            <span class="label-text-alt text-error">{{
+              getFieldError("firstName")
+            }}</span>
+          </label>
+          }
         </div>
 
         <div class="form-control">
@@ -165,11 +173,19 @@
           <input
             type="text"
             class="input input-bordered"
+            [class.input-error]="hasFieldError('lastName')"
             [(ngModel)]="form().lastName"
-            placeholder="Enter last name"
+            (blur)="onFieldBlur('lastName')"
             required
             minlength="2"
           />
+          @if (hasFieldError('lastName')) {
+          <label class="label">
+            <span class="label-text-alt text-error">{{
+              getFieldError("lastName")
+            }}</span>
+          </label>
+          }
         </div>
 
         <div class="form-control">
@@ -179,10 +195,18 @@
           <input
             type="email"
             class="input input-bordered"
+            [class.input-error]="hasFieldError('email')"
             [(ngModel)]="form().email"
-            placeholder="example@email.com"
+            (blur)="onFieldBlur('email')"
             required
           />
+          @if (hasFieldError('email')) {
+          <label class="label">
+            <span class="label-text-alt text-error">{{
+              getFieldError("email")
+            }}</span>
+          </label>
+          }
         </div>
 
         <div class="form-control">
@@ -192,11 +216,19 @@
           <input
             type="text"
             class="input input-bordered"
+            [class.input-error]="hasFieldError('documentNumber')"
             [(ngModel)]="form().documentNumber"
-            placeholder="Enter DNI/ID (min. 8 characters)"
+            (blur)="onFieldBlur('documentNumber')"
             required
             minlength="8"
           />
+          @if (hasFieldError('documentNumber')) {
+          <label class="label">
+            <span class="label-text-alt text-error">{{
+              getFieldError("documentNumber")
+            }}</span>
+          </label>
+          }
         </div>
 
         <div class="form-control">
@@ -209,10 +241,18 @@
             max="120"
             step="1"
             class="input input-bordered"
+            [class.input-error]="hasFieldError('age')"
             [(ngModel)]="form().age"
-            placeholder="Enter age (18-120)"
+            (blur)="onFieldBlur('age')"
             required
           />
+          @if (hasFieldError('age')) {
+          <label class="label">
+            <span class="label-text-alt text-error">{{
+              getFieldError("age")
+            }}</span>
+          </label>
+          }
         </div>
 
         <div class="form-control">
@@ -222,10 +262,18 @@
           <input
             type="tel"
             class="input input-bordered"
+            [class.input-error]="hasFieldError('phoneNumber')"
             [(ngModel)]="form().phoneNumber"
-            placeholder="999999999 (optional)"
+            (blur)="onFieldBlur('phoneNumber')"
             pattern="[0-9+\-\s()]{8,15}"
           />
+          @if (hasFieldError('phoneNumber')) {
+          <label class="label">
+            <span class="label-text-alt text-error">{{
+              getFieldError("phoneNumber")
+            }}</span>
+          </label>
+          }
         </div>
 
         <!-- Password fields only for new customers -->
@@ -237,11 +285,19 @@
           <input
             type="password"
             class="input input-bordered"
+            [class.input-error]="hasFieldError('password')"
             [(ngModel)]="form().password"
-            placeholder="Minimum 6 characters"
+            (blur)="onFieldBlur('password')"
             required
             minlength="6"
           />
+          @if (hasFieldError('password')) {
+          <label class="label">
+            <span class="label-text-alt text-error">{{
+              getFieldError("password")
+            }}</span>
+          </label>
+          }
         </div>
 
         <div class="form-control">
@@ -251,11 +307,19 @@
           <input
             type="password"
             class="input input-bordered"
+            [class.input-error]="hasFieldError('confirmPassword')"
             [(ngModel)]="form().confirmPassword"
-            placeholder="Confirm password"
+            (blur)="onFieldBlur('confirmPassword')"
             required
             minlength="6"
           />
+          @if (hasFieldError('confirmPassword')) {
+          <label class="label">
+            <span class="label-text-alt text-error">{{
+              getFieldError("confirmPassword")
+            }}</span>
+          </label>
+          }
         </div>
         }
       </div>
