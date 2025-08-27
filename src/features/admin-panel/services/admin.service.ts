@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
+import { HttpUtils } from '../../../core/utils/http-utils';
 import { environment } from '../../../environments/environment';
 import { CustomerForm } from '../interfaces/admin.interfaces';
 
@@ -20,6 +21,7 @@ export class AdminService {
       );
       return response.success ? response.data : [];
     } catch (error) {
+      // Error interceptor will handle user notification
       console.error('Error loading books:', error);
       return [];
     }
@@ -293,8 +295,10 @@ export class AdminService {
 
   async createRental(rental: any) {
     try {
+      // Use silent headers for detailed error handling
+      const headers = HttpUtils.createSilentHeaders();
       const response = await firstValueFrom(
-        this.http.post<any>(`${this.baseUrl}rentalorders`, rental)
+        this.http.post<any>(`${this.baseUrl}rentalorders`, rental, { headers })
       );
       return response;
     } catch (error: any) {

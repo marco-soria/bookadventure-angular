@@ -53,9 +53,8 @@ export class Login {
             this.handlePendingRental();
           }
         },
-        error: (error) => {
-          console.error('Login error:', error);
-        },
+        // Error handling is now managed by the error interceptor
+        // No need for explicit error handling here
       });
     } else {
       this.markFormGroupTouched();

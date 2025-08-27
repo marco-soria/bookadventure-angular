@@ -68,9 +68,8 @@ export class Register {
             queryParams: { message: 'Registration successful! Please login.' },
           });
         },
-        error: (error) => {
-          console.error('Register error:', error);
-        },
+        // Error handling is now managed by the error interceptor
+        // No need for explicit error handling here
       });
     } else {
       this.markFormGroupTouched();

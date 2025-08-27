@@ -75,6 +75,8 @@ export class ProfileComponent implements OnInit {
         this.isLoadingUser.set(false);
       },
       error: (error) => {
+        // Error interceptor will handle the notification
+        // Only handle specific business logic here if needed
         console.error('Profile load error:', error);
         this.userError.set(error.message || 'Failed to load profile');
         this.isLoadingUser.set(false);
