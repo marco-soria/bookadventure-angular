@@ -30,49 +30,108 @@
 
   <!-- Customers Table -->
   @if (!isLoading()) {
-  <div class="overflow-x-auto">
-    <table class="table table-zebra bg-base-100">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>DNI</th>
-          <th>Age</th>
-          <th>Phone</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (customer of customers(); track customer.id) {
-        <tr>
-          <td>{{ customer.id }}</td>
-          <td>{{ customer.firstName }} {{ customer.lastName }}</td>
-          <td>{{ customer.email }}</td>
-          <td>{{ customer.dni }}</td>
-          <td>{{ customer.age }}</td>
-          <td>{{ customer.phoneNumber || "N/A" }}</td>
-          <td>
-            <div class="flex gap-2">
-              <button class="btn btn-sm btn-info" (click)="openForm(customer)">
-                Edit
-              </button>
+  <div class="space-y-6">
+    <!-- Active Customers -->
+    <div class="overflow-x-auto">
+      <h3 class="text-lg font-medium text-base-content mb-3">
+        Active Customers
+      </h3>
+      <table class="table table-zebra bg-base-100">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>DNI</th>
+            <th>Age</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (customer of activeCustomers(); track customer.id) {
+          <tr>
+            <td>{{ customer.id }}</td>
+            <td>{{ customer.firstName }} {{ customer.lastName }}</td>
+            <td>{{ customer.email }}</td>
+            <td>{{ customer.dni }}</td>
+            <td>{{ customer.age }}</td>
+            <td>{{ customer.phoneNumber || "N/A" }}</td>
+            <td>
+              <span class="badge badge-success">{{ customer.status }}</span>
+            </td>
+            <td>
+              <div class="flex gap-2">
+                <button
+                  class="btn btn-sm btn-info"
+                  (click)="openForm(customer)"
+                >
+                  Edit
+                </button>
+                <button
+                  class="btn btn-sm btn-error"
+                  (click)="delete(customer.id)"
+                >
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="8" class="text-center">No active customers found</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Deleted Customers -->
+    @if (deletedCustomers().length > 0) {
+    <div class="overflow-x-auto">
+      <h3 class="text-lg font-medium text-base-content mb-3">
+        Deleted Customers
+      </h3>
+      <table class="table table-zebra bg-base-100">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>DNI</th>
+            <th>Age</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (customer of deletedCustomers(); track customer.id) {
+          <tr class="opacity-60">
+            <td>{{ customer.id }}</td>
+            <td>{{ customer.firstName }} {{ customer.lastName }}</td>
+            <td>{{ customer.email }}</td>
+            <td>{{ customer.dni }}</td>
+            <td>{{ customer.age }}</td>
+            <td>{{ customer.phoneNumber || "N/A" }}</td>
+            <td>
+              <span class="badge badge-error">{{ customer.status }}</span>
+            </td>
+            <td>
               <button
-                class="btn btn-sm btn-error"
-                (click)="delete(customer.id)"
+                class="btn btn-sm btn-success"
+                (click)="restore(customer.id)"
               >
-                Delete
+                Restore
               </button>
-            </div>
-          </td>
-        </tr>
-        } @empty {
-        <tr>
-          <td colspan="7" class="text-center">No customers found</td>
-        </tr>
-        }
-      </tbody>
-    </table>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
   </div>
   }
 
@@ -93,6 +152,9 @@
             type="text"
             class="input input-bordered"
             [(ngModel)]="form().firstName"
+            placeholder="Enter first name"
+            required
+            minlength="2"
           />
         </div>
 
@@ -104,6 +166,9 @@
             type="text"
             class="input input-bordered"
             [(ngModel)]="form().lastName"
+            placeholder="Enter last name"
+            required
+            minlength="2"
           />
         </div>
 
@@ -115,30 +180,38 @@
             type="email"
             class="input input-bordered"
             [(ngModel)]="form().email"
+            placeholder="example@email.com"
+            required
           />
         </div>
 
         <div class="form-control">
           <label class="label">
-            <span class="label-text">DNI *</span>
+            <span class="label-text">Document Number *</span>
           </label>
           <input
             type="text"
             class="input input-bordered"
-            [(ngModel)]="form().dni"
+            [(ngModel)]="form().documentNumber"
+            placeholder="Enter DNI/ID (min. 8 characters)"
+            required
+            minlength="8"
           />
         </div>
 
         <div class="form-control">
           <label class="label">
-            <span class="label-text">Age *</span>
+            <span class="label-text">Age * (minimum 18)</span>
           </label>
           <input
             type="number"
             min="18"
             max="120"
+            step="1"
             class="input input-bordered"
             [(ngModel)]="form().age"
+            placeholder="Enter age (18-120)"
+            required
           />
         </div>
 
@@ -150,8 +223,41 @@
             type="tel"
             class="input input-bordered"
             [(ngModel)]="form().phoneNumber"
+            placeholder="999999999 (optional)"
+            pattern="[0-9+\-\s()]{8,15}"
           />
         </div>
+
+        <!-- Password fields only for new customers -->
+        @if (!editingItem()) {
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Password *</span>
+          </label>
+          <input
+            type="password"
+            class="input input-bordered"
+            [(ngModel)]="form().password"
+            placeholder="Minimum 6 characters"
+            required
+            minlength="6"
+          />
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Confirm Password *</span>
+          </label>
+          <input
+            type="password"
+            class="input input-bordered"
+            [(ngModel)]="form().confirmPassword"
+            placeholder="Confirm password"
+            required
+            minlength="6"
+          />
+        </div>
+        }
       </div>
 
       <div class="modal-action">

@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
 import { environment } from '../../../environments/environment';
+import { CustomerForm } from '../interfaces/admin.interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -206,9 +207,21 @@ export class AdminService {
     return response;
   }
 
-  async createCustomer(customer: any) {
+  async createCustomer(customer: CustomerForm) {
+    // Los customers se crean a través del endpoint de registro de usuarios
+    const registerData = {
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      email: customer.email,
+      documentNumber: customer.documentNumber, // Backend expects documentNumber
+      age: customer.age,
+      phoneNumber: customer.phoneNumber, // Include phone number
+      password: customer.password,
+      confirmPassword: customer.confirmPassword,
+    };
+
     const response = await firstValueFrom(
-      this.http.post<any>(`${this.baseUrl}customers`, customer)
+      this.http.post<any>(`${this.baseUrl}users/register`, registerData)
     );
     return response;
   }

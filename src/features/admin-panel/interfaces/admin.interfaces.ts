@@ -29,7 +29,7 @@ export interface Customer {
   dni: string;
   age: number;
   phoneNumber?: string;
-  status: number;
+  status: string; // Changed from number to string to match backend CustomerResponseDto
 }
 
 export interface RentalOrder {
@@ -82,9 +82,11 @@ export interface CustomerForm {
   firstName: string;
   lastName: string;
   email: string;
-  dni: string;
+  documentNumber: string; // Cambio de dni a documentNumber para coincidir con el DTO
   age: number;
-  phoneNumber: string;
+  phoneNumber?: string;
+  password: string;
+  confirmPassword: string;
 }
 
 export interface RentalForm {
