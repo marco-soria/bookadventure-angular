@@ -1,23 +1,122 @@
 <div class="navbar bg-base-100 shadow-lg px-4 min-h-16">
   <!-- Logo y título (izquierda) -->
   <div class="navbar-start">
-    <a class="flex items-center space-x-3 h-full" routerLink="/">
+    <div class="dropdown lg:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h7"
+          ></path>
+        </svg>
+      </div>
+      <ul
+        tabindex="0"
+        class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+      >
+        @if (!isAuthenticated()) {
+        <li><a routerLink="/login">Login</a></li>
+        <li><a routerLink="/register">Register</a></li>
+        } @if (isAuthenticated()) {
+        <!-- My Account - para todos los usuarios autenticados -->
+        <li>
+          <a routerLink="/my-account">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
+            </svg>
+            My Account
+          </a>
+        </li>
+        <!-- Links para admin - Admin Panel primero -->
+        @if (isAdmin()) {
+        <li>
+          <a routerLink="/admin">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+            Admin Panel
+          </a>
+        </li>
+        }
+        <!-- Logout - para todos los usuarios autenticados -->
+        <li>
+          <a (click)="onLogout()">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              />
+            </svg>
+            Logout
+          </a>
+        </li>
+        }
+      </ul>
+    </div>
+
+    <a class="flex items-center space-x-2 lg:space-x-3 h-full" routerLink="/">
       <img
         src="booklogo.png"
         alt="Book Adventure Logo"
-        class="w-10 h-10 object-contain"
+        class="w-8 h-8 lg:w-10 lg:h-10 object-contain"
       />
-      <span class="text-xl font-bold text-primary">BookAdventure</span>
+      <span class="text-lg lg:text-xl font-bold text-primary hidden sm:inline"
+        >BookAdventure</span
+      >
     </a>
   </div>
 
   <!-- Barra de búsqueda (centro) -->
-  <div class="navbar-center hidden lg:flex items-center">
-    <div class="form-control">
+  <div class="navbar-center hidden lg:flex items-center flex-1 max-w-lg mx-4">
+    <div class="form-control w-full">
       <input
         type="text"
         placeholder="Search books by title..."
-        class="input input-bordered w-80"
+        class="input input-bordered w-full max-w-md"
         [value]="searchQuery()"
         (input)="updateSearchQuery($any($event.target).value); onSearchInput()"
         (keyup.enter)="onSearch()"
@@ -27,9 +126,9 @@
 
   <!-- Controles de usuario (derecha) -->
   <div class="navbar-end">
-    <div class="flex items-center space-x-2 h-full">
+    <div class="flex items-center space-x-1 lg:space-x-2 h-full">
       <!-- Toggle de tema -->
-      <label class="swap swap-rotate btn btn-ghost btn-circle">
+      <label class="swap swap-rotate btn btn-ghost btn-circle btn-sm lg:btn-md">
         <input
           type="checkbox"
           class="theme-controller"
@@ -39,7 +138,7 @@
         />
         <!-- sun icon -->
         <svg
-          class="swap-off fill-current w-6 h-6"
+          class="swap-off fill-current w-4 h-4 lg:w-6 lg:h-6"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
         >
@@ -49,7 +148,7 @@
         </svg>
         <!-- moon icon -->
         <svg
-          class="swap-on fill-current w-6 h-6"
+          class="swap-on fill-current w-4 h-4 lg:w-6 lg:h-6"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
         >
@@ -59,18 +158,21 @@
         </svg>
       </label>
 
-      <!-- Vista no autenticado -->
+      <!-- Vista no autenticado - Solo en desktop -->
       @if (!isAuthenticated()) {
-      <a class="nav-link" routerLink="/login">Login</a>
-      <a class="nav-link" routerLink="/register">Register</a>
+      <div class="hidden lg:flex space-x-2">
+        <a class="btn btn-ghost btn-sm" routerLink="/login">Login</a>
+        <a class="btn btn-outline btn-sm" routerLink="/register">Register</a>
+      </div>
       }
 
       <!-- Vista autenticado -->
       @if (isAuthenticated()) {
-      <!-- Nombre del usuario (solo firstName) -->
-      <span class="text-sm font-medium hidden sm:inline">{{
-        firstName()
-      }}</span>
+      <!-- Nombre del usuario (solo firstName en desktop) -->
+      <span
+        class="text-sm font-medium hidden lg:inline-block max-w-24 truncate"
+        >{{ firstName() }}</span
+      >
 
       <!-- Menu dropdown de usuario -->
       <div
@@ -80,23 +182,16 @@
         <div
           tabindex="0"
           role="button"
-          class="btn btn-ghost btn-circle avatar"
+          class="btn btn-ghost btn-circle btn-sm lg:btn-md avatar"
           (click)="toggleUserMenu()"
         >
           <div class="avatar placeholder">
             <div
-              class="bg-neutral text-neutral-content rounded-full w-10 h-10 flex items-center justify-center"
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              "
+              class="bg-neutral text-neutral-content rounded-full w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center"
             >
-              <span
-                class="text-lg"
-                style="line-height: 1; margin: 0; padding: 0"
-                >{{ firstName().charAt(0) }}</span
-              >
+              <span class="text-sm lg:text-lg font-medium">{{
+                firstName().charAt(0)
+              }}</span>
             </div>
           </div>
         </div>
@@ -183,15 +278,35 @@
 </div>
 
 <!-- Búsqueda móvil -->
-<div class="lg:hidden bg-base-100 border-t border-base-300 p-4">
+<div class="lg:hidden bg-base-100 border-t border-base-300 px-4 py-3">
   <div class="form-control">
-    <input
-      type="text"
-      placeholder="Search books by title..."
-      class="input input-bordered w-full"
-      [value]="searchQuery()"
-      (input)="updateSearchQuery($any($event.target).value); onSearchInput()"
-      (keyup.enter)="onSearch()"
-    />
+    <div class="relative">
+      <input
+        type="text"
+        placeholder="Search books by title..."
+        class="input input-bordered w-full pr-10 input-sm"
+        [value]="searchQuery()"
+        (input)="updateSearchQuery($any($event.target).value); onSearchInput()"
+        (keyup.enter)="onSearch()"
+      />
+      <button
+        class="absolute inset-y-0 right-0 pr-3 flex items-center"
+        (click)="onSearch()"
+      >
+        <svg
+          class="h-4 w-4 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+      </button>
+    </div>
   </div>
 </div>

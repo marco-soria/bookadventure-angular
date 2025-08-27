@@ -123,6 +123,7 @@
 @media (max-width: 768px) {
   .navbar {
     padding: 0.5rem 1rem;
+    min-height: 3.5rem;
   }
 
   .navbar-start span {
@@ -131,6 +132,79 @@
 
   .navbar-end .btn {
     padding: 0.5rem;
+  }
+
+  /* Mobile hamburger menu styling */
+  .dropdown .btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    min-height: 2.5rem;
+  }
+
+  /* Mobile search optimization */
+  .navbar ~ div input {
+    font-size: 0.875rem;
+  }
+}
+
+/* Tablet responsive adjustments */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .navbar-center {
+    max-width: 60%;
+  }
+
+  .navbar-center input {
+    max-width: 100%;
+  }
+}
+
+/* Large screen optimizations */
+@media (min-width: 1024px) {
+  .navbar {
+    padding: 0.75rem 2rem;
+  }
+
+  .navbar-center {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .navbar-center input {
+    min-width: 300px;
+    max-width: 500px;
+  }
+}
+
+/* User name text truncation for medium screens */
+@media (min-width: 1024px) and (max-width: 1280px) {
+  .navbar-end span {
+    max-width: 6rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* Extra responsive fixes */
+@media (max-width: 640px) {
+  .navbar-start img {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .navbar-start span {
+    display: none;
+  }
+
+  .avatar .rounded-full {
+    width: 2rem !important;
+    height: 2rem !important;
+  }
+
+  .btn-circle {
+    width: 2.5rem;
+    height: 2.5rem;
+    min-height: 2.5rem;
   }
 }
 

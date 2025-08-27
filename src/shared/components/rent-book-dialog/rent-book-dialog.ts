@@ -73,6 +73,13 @@ export class RentBookDialogComponent {
       text: 'You need to be logged in to rent books. You will be redirected to the login page.',
       confirmButtonText: 'Go to Login',
       confirmButtonColor: '#8B5CF6',
+      background: '#1f2937',
+      color: '#f9fafb',
+      customClass: {
+        popup: 'dark-swal-popup',
+        title: 'dark-swal-title',
+        htmlContainer: 'dark-swal-content',
+      },
     }).then((result) => {
       if (result.isConfirmed && this.book) {
         // Store the current book info in session for after login
@@ -142,6 +149,13 @@ export class RentBookDialogComponent {
           }" has been rented for ${this.rentalDays()} days.`,
           confirmButtonText: 'Great!',
           confirmButtonColor: '#28a745',
+          background: '#1f2937',
+          color: '#f9fafb',
+          customClass: {
+            popup: 'dark-swal-popup',
+            title: 'dark-swal-title',
+            htmlContainer: 'dark-swal-content',
+          },
         });
         this.close();
       } else {
@@ -153,6 +167,13 @@ export class RentBookDialogComponent {
             'Unable to rent the book. Please try again.',
           confirmButtonText: 'OK',
           confirmButtonColor: '#dc3545',
+          background: '#1f2937',
+          color: '#f9fafb',
+          customClass: {
+            popup: 'dark-swal-popup',
+            title: 'dark-swal-title',
+            htmlContainer: 'dark-swal-content',
+          },
         });
       }
     } catch (error: any) {
@@ -164,6 +185,13 @@ export class RentBookDialogComponent {
           'An unexpected error occurred. Please try again.',
         confirmButtonText: 'OK',
         confirmButtonColor: '#dc3545',
+        background: '#1f2937',
+        color: '#f9fafb',
+        customClass: {
+          popup: 'dark-swal-popup',
+          title: 'dark-swal-title',
+          htmlContainer: 'dark-swal-content',
+        },
       });
     } finally {
       this.isLoading.set(false);

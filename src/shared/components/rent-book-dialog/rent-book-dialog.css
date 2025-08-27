@@ -58,3 +58,42 @@
     background: rgba(139, 69, 19, 0.6);
   }
 }
+
+/* SweetAlert2 Dark Theme Customization */
+:root {
+  --swal-border-radius: 12px;
+}
+
+.dark-swal-popup {
+  background-color: #1f2937 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3),
+    0 10px 10px -5px rgba(0, 0, 0, 0.1) !important;
+}
+
+.dark-swal-title {
+  color: #f9fafb !important;
+  font-weight: 600 !important;
+}
+
+.dark-swal-content {
+  color: #d1d5db !important;
+}
+
+/* SweetAlert2 icon customization for dark theme */
+.swal2-icon.swal2-success .swal2-success-ring {
+  border-color: rgba(34, 197, 94, 0.3) !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-fix {
+  background-color: #1f2937 !important;
+}
+
+.swal2-icon.swal2-error [class^="swal2-x-mark-line"] {
+  background-color: #ef4444 !important;
+}
+
+.swal2-icon.swal2-info {
+  border-color: #8b5cf6 !important;
+  color: #8b5cf6 !important;
+}
