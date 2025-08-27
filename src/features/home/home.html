@@ -36,7 +36,6 @@
             (change)="onSortChange()"
             class="filter-select"
           >
-            <option value="none">A - Z</option>
             <option value="asc">A - Z</option>
             <option value="desc">Z - A</option>
           </select>
@@ -47,7 +46,7 @@
           <button
             class="clear-filters-btn"
             (click)="clearFilters()"
-            [disabled]="selectedGenre() === null && sortOrder() === 'none'"
+            [disabled]="selectedGenre() === null && sortOrder() === 'asc'"
           >
             Clear
           </button>
@@ -103,10 +102,9 @@
       <h3>No books found</h3>
       @if (searchFromNavbar()) {
       <p>Try searching with different keywords</p>
-      } @if (selectedGenre() || sortOrder() !== 'none') {
+      } @if (selectedGenre()) {
       <p>Try adjusting your filters</p>
-      } @if (!searchFromNavbar() && selectedGenre() === null && sortOrder() ===
-      'none') {
+      } @if (!searchFromNavbar() && selectedGenre() === null) {
       <p>No books available at the moment</p>
       }
     </div>

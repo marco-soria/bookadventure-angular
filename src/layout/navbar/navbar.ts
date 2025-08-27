@@ -6,8 +6,13 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterModule,
+} from '@angular/router';
+import { debounceTime, distinctUntilChanged, filter, Subject } from 'rxjs';
 import { AuthService } from '../../core/services/auth-service';
 import { BookService } from '../../core/services/book.service';
 
@@ -22,6 +27,7 @@ export class Navbar {
   private authService = inject(AuthService);
   private bookService = inject(BookService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private searchSubject = new Subject<string>();
 
   // Signals para estado reactivo
@@ -45,6 +51,22 @@ export class Navbar {
   constructor() {
     this.initializeTheme();
     this.setupSearch();
+    this.syncSearchWithRoute();
+  }
+
+  // Sync search input with route parameters
+  syncSearchWithRoute() {
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        // Get current route and check for search parameter
+        const searchParam = this.route.snapshot.queryParams['search'];
+        if (searchParam) {
+          this.searchQuery.set(searchParam);
+        } else {
+          this.searchQuery.set('');
+        }
+      });
   }
 
   // Setup debounced search
@@ -59,6 +81,11 @@ export class Navbar {
           // Navigate to home with search parameter
           this.router.navigate(['/home'], {
             queryParams: { search: searchTerm.trim() },
+          });
+        } else {
+          // Clear search when input is empty
+          this.router.navigate(['/home'], {
+            queryParams: {},
           });
         }
       });

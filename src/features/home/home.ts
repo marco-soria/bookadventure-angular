@@ -25,7 +25,7 @@ export class Home implements OnInit {
 
   // Filters
   selectedGenre = signal<number | null>(null);
-  sortOrder = signal<'none' | 'asc' | 'desc'>('none');
+  sortOrder = signal<'asc' | 'desc'>('asc');
   searchFromNavbar = signal<string>('');
 
   // Pagination
@@ -88,33 +88,18 @@ export class Home implements OnInit {
         sortDescending: false,
       };
       request = this.bookService.getBooks(searchParams);
-    } else if (this.selectedGenre() && this.sortOrder() !== 'none') {
-      // Genre + alphabetical sort
+    } else if (this.selectedGenre()) {
+      // Genre + alphabetical sort (always apply sort since we have default)
       const descending = this.sortOrder() === 'desc';
       request = this.bookService.getBooksByGenreAlphabetical(
         this.selectedGenre()!,
         descending,
         pagination
       );
-    } else if (this.selectedGenre()) {
-      // Genre only
-      request = this.bookService.getBooksByGenre(
-        this.selectedGenre()!,
-        pagination
-      );
-    } else if (this.sortOrder() !== 'none') {
-      // Alphabetical sort only
+    } else {
+      // Alphabetical sort only (default behavior)
       const descending = this.sortOrder() === 'desc';
       request = this.bookService.getBooksAlphabetical(descending, pagination);
-    } else {
-      // Default: all books
-      const searchParams: BookSearchDto = {
-        page: this.currentPage(),
-        recordsPerPage: this.pageSize(),
-        sortBy: 'title',
-        sortDescending: false,
-      };
-      request = this.bookService.getBooks(searchParams);
     }
 
     request.subscribe({
@@ -149,7 +134,7 @@ export class Home implements OnInit {
 
   clearFilters(): void {
     this.selectedGenre.set(null);
-    this.sortOrder.set('none');
+    this.sortOrder.set('asc');
     this.currentPage.set(1);
     this.loadBooks();
   }

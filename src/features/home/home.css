@@ -411,9 +411,9 @@
 }
 
 .prev-btn:hover:not(:disabled) {
-  background-color: var(--success-color, #28a745);
+  background-color: var(--success-color, #17a2b8);
   color: white;
-  border-color: var(--success-color, #28a745);
+  border-color: var(--success-color, #17a2b8);
   transform: translateX(-2px);
 }
 
