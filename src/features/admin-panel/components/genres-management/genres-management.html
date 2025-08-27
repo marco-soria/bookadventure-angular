@@ -39,7 +39,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (genre of filteredGenres(); track genre.id) {
+        @for (genre of genres(); track genre.id) {
         <tr>
           <td>{{ genre.id }}</td>
           <td>{{ genre.name }}</td>

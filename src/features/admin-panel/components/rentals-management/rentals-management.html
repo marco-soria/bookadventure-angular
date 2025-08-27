@@ -43,7 +43,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (rental of filteredRentals(); track rental.id) {
+        @for (rental of rentals(); track rental.id) {
         <tr>
           <td>{{ rental.id }}</td>
           <td>{{ rental.customerName }}</td>

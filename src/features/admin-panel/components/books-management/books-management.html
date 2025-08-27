@@ -43,7 +43,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (book of filteredBooks(); track book.id) {
+        @for (book of books(); track book.id) {
         <tr>
           <td>{{ book.id }}</td>
           <td>{{ book.title }}</td>
