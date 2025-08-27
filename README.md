@@ -122,27 +122,27 @@ export const environment = {
 
 ```bash
 # Development server
-npm start
+pnpm start
 # or
 ng serve
 
 # Production build
-npm run build
+pnpm run build
 # or
 ng build --configuration production
 
 # Linting
-npm run lint
+pnpm run lint
 # or
 ng lint
 
 # Unit tests
-npm test
+pnpm test
 # or
 ng test
 
 # E2E tests
-npm run e2e
+pnpm run e2e
 # or
 ng e2e
 ```
@@ -389,11 +389,11 @@ xl: 1280px   /* Desktops */
 
 ```bash
 # Automatic linting
-npm run lint
-npm run lint:fix
+pnpm run lint
+pnpm run lint:fix
 
 # Prettier formatting
-npm run format
+pnpm run format
 ```
 
 ### **Conventions**
