@@ -22,13 +22,11 @@ export class GenresManagement implements OnInit {
   // Formulario
   form = signal<GenreForm>({
     name: '',
-    description: '',
+    status: true,
   });
 
-  // Computed properties
-  filteredGenres = computed(() =>
-    this.genres().filter((genre) => genre.status === 1)
-  );
+  // Computed properties - Show all genres (both active and deleted)
+  filteredGenres = computed(() => this.genres());
 
   async ngOnInit() {
     await this.loadData();
@@ -37,7 +35,10 @@ export class GenresManagement implements OnInit {
   async loadData() {
     this.isLoading.set(true);
     try {
-      const genresResult = await this.adminService.getGenresWithPagination(1, 50);
+      const genresResult = await this.adminService.getGenresWithPagination(
+        1,
+        50
+      );
       if (genresResult.success) {
         this.genres.set(genresResult.data);
       } else {
@@ -58,13 +59,13 @@ export class GenresManagement implements OnInit {
       this.editingItem.set(genre);
       this.form.set({
         name: genre.name,
-        description: genre.description,
+        status: genre.status,
       });
     } else {
       this.editingItem.set(null);
       this.form.set({
         name: '',
-        description: '',
+        status: true,
       });
     }
     this.showForm.set(true);
@@ -135,6 +136,39 @@ export class GenresManagement implements OnInit {
       } catch (error) {
         console.error('Error deleting genre:', error);
         this.adminService.showError('Error deleting genre');
+      }
+    }
+  }
+
+  async restore(genreId: number) {
+    const genre = this.genres().find((g) => g.id === genreId);
+    if (!genre) return;
+
+    // Validate that the genre is actually deleted (status = false)
+    if (genre.status) {
+      this.adminService.showError('Only deleted genres can be restored');
+      return;
+    }
+
+    const confirmed = await this.adminService.confirmRestore(
+      'Restore Genre',
+      `Are you sure you want to restore "${genre.name}"?`
+    );
+
+    if (confirmed) {
+      try {
+        const response = await this.adminService.restoreGenre(genre.id);
+        if (response.success) {
+          this.adminService.showSuccess('Genre restored successfully');
+          await this.loadData();
+        } else {
+          this.adminService.showError(
+            response.errorMessage || 'Error restoring genre'
+          );
+        }
+      } catch (error) {
+        console.error('Error restoring genre:', error);
+        this.adminService.showError('Error restoring genre');
       }
     }
   }

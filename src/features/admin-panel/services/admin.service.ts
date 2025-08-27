@@ -314,10 +314,10 @@ export class AdminService {
       icon: 'success',
       timer: 2000,
       showConfirmButton: false,
-      background: '#ffffff',
-      color: '#1f2937',
+      background: '#1f2937',
+      color: '#f9fafb',
       customClass: {
-        popup: 'shadow-lg border border-gray-200',
+        popup: 'shadow-lg border border-gray-600',
       },
     });
   }
@@ -327,11 +327,11 @@ export class AdminService {
       title: 'Error!',
       text: message,
       icon: 'error',
-      background: '#ffffff',
-      color: '#1f2937',
+      background: '#1f2937',
+      color: '#f9fafb',
       confirmButtonColor: '#ef4444',
       customClass: {
-        popup: 'shadow-lg border border-gray-200',
+        popup: 'shadow-lg border border-gray-600',
       },
     });
   }
@@ -345,10 +345,10 @@ export class AdminService {
       confirmButtonColor: '#ef4444',
       cancelButtonColor: '#6b7280',
       confirmButtonText: 'Yes, delete it!',
-      background: '#ffffff',
-      color: '#1f2937',
+      background: '#1f2937',
+      color: '#f9fafb',
       customClass: {
-        popup: 'shadow-lg border border-gray-200',
+        popup: 'shadow-lg border border-gray-600',
       },
     });
     return result.isConfirmed;
@@ -363,10 +363,10 @@ export class AdminService {
       confirmButtonColor: '#10b981',
       cancelButtonColor: '#6b7280',
       confirmButtonText: 'Yes, restore it!',
-      background: '#ffffff',
-      color: '#1f2937',
+      background: '#1f2937',
+      color: '#f9fafb',
       customClass: {
-        popup: 'shadow-lg border border-gray-200',
+        popup: 'shadow-lg border border-gray-600',
       },
     });
     return result.isConfirmed;

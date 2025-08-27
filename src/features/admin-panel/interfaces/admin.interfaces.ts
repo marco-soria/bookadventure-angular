@@ -18,7 +18,7 @@ export interface Genre {
   id: number;
   name: string;
   description: string;
-  status: number;
+  status: boolean; // true = Active, false = Deleted (soft deleted)
 }
 
 export interface Customer {
@@ -75,7 +75,7 @@ export interface BookForm {
 
 export interface GenreForm {
   name: string;
-  description: string;
+  status: boolean;
 }
 
 export interface CustomerForm {

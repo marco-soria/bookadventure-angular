@@ -30,3 +30,74 @@
 .flex.gap-2 > * + * {
   margin-left: 0.5rem;
 }
+
+/* Form styling improvements */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-control .label {
+  padding: 0;
+  min-height: auto;
+  margin-bottom: 0.25rem;
+}
+
+.form-control .label-text {
+  font-weight: 500;
+  color: hsl(var(--bc));
+  font-size: 0.875rem;
+}
+
+.input {
+  width: 100%;
+}
+
+.checkbox {
+  margin: 0;
+}
+
+/* Badge styling */
+.badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.badge-success {
+  background-color: #10b981;
+  color: white;
+}
+
+.badge-error {
+  background-color: #ef4444;
+  color: white;
+}
+
+/* Button styling */
+.btn-success {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+  background-color: #059669;
+  border-color: #059669;
+}
+
+.btn-success:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Override DaisyUI default opacity for restore button */
+.btn-success:not(:disabled) {
+  opacity: 1 !important;
+}

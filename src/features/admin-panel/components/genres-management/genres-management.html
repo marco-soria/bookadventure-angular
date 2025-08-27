@@ -34,23 +34,47 @@
         <tr>
           <th>ID</th>
           <th>Name</th>
-          <th>Description</th>
+          <th>Status</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         @for (genre of genres(); track genre.id) {
-        <tr>
+        <tr [class]="!genre.status ? 'opacity-60' : ''">
           <td>{{ genre.id }}</td>
           <td>{{ genre.name }}</td>
-          <td>{{ genre.description }}</td>
+          <td>
+            <div
+              class="badge badge-sm"
+              [class.badge-success]="genre.status"
+              [class.badge-error]="!genre.status"
+            >
+              {{ genre.status ? "Active" : "Deleted" }}
+            </div>
+          </td>
           <td>
             <div class="flex gap-2">
-              <button class="btn btn-sm btn-info" (click)="openForm(genre)">
+              <button
+                class="btn btn-sm btn-info"
+                (click)="openForm(genre)"
+                [disabled]="!genre.status"
+              >
                 Edit
               </button>
-              <button class="btn btn-sm btn-error" (click)="delete(genre.id)">
+              <button
+                class="btn btn-sm btn-error"
+                (click)="delete(genre.id)"
+                [disabled]="!genre.status"
+              >
                 Delete
+              </button>
+              <button
+                class="btn btn-sm btn-success"
+                (click)="restore(genre.id)"
+                [disabled]="genre.status"
+                [class.opacity-50]="genre.status"
+              >
+                Restore
               </button>
             </div>
           </td>
@@ -73,7 +97,7 @@
         {{ editingItem() ? "Edit Genre" : "Add New Genre" }}
       </h3>
 
-      <div class="space-y-4">
+      <div class="form-group">
         <div class="form-control">
           <label class="label">
             <span class="label-text">Name *</span>
@@ -82,19 +106,28 @@
             type="text"
             class="input input-bordered"
             [(ngModel)]="form().name"
+            placeholder="Enter genre name"
           />
         </div>
 
         <div class="form-control">
           <label class="label">
-            <span class="label-text">Description</span>
+            <span class="label-text">Status</span>
           </label>
-          <textarea
-            class="textarea textarea-bordered"
-            rows="3"
-            [(ngModel)]="form().description"
-          >
-          </textarea>
+          <div class="form-control">
+            <label class="label cursor-pointer justify-start gap-3">
+              <input
+                type="checkbox"
+                class="checkbox checkbox-primary"
+                [(ngModel)]="form().status"
+              />
+              <span class="label-text">Active</span>
+            </label>
+            <div class="text-xs text-gray-500 mt-1">
+              Uncheck to mark as inactive. Use "Delete" button for soft
+              deletion.
+            </div>
+          </div>
         </div>
       </div>
 
