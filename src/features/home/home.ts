@@ -172,10 +172,4 @@ export class Home implements OnInit {
   onImageError(event: any): void {
     event.target.src = '/booknotfound.png';
   }
-
-  onRentBook(book: Book): void {
-    // TODO: Implement rental functionality
-    console.log('Renting book:', book.title);
-    alert(`Rental functionality will be implemented soon for: ${book.title}`);
-  }
 }

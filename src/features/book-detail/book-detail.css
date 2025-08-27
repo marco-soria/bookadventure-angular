@@ -154,7 +154,6 @@
 }
 
 .stock-available {
-  color: #28a745;
   font-weight: 600;
 }
 
@@ -164,7 +163,6 @@
 }
 
 .status-active {
-  color: #28a745;
   font-weight: 600;
 }
 
@@ -174,16 +172,14 @@
 }
 
 .book-description {
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 .book-description h3 {
   font-size: 1.5rem;
 
   font-weight: 600;
-  margin-bottom: 15px;
-
-  padding-bottom: 8px;
+  margin-bottom: 8px;
 }
 
 .book-description p {
@@ -194,7 +190,7 @@
 }
 
 .book-actions {
-  text-align: center;
+  text-align: left;
 }
 
 .btn {

@@ -143,21 +143,10 @@
 
         <div class="book-actions">
           <button
-            class="btn btn-outline details-btn"
+            class="btn btn-primary details-btn"
             [routerLink]="['/book', book.id]"
           >
-            📖 Details
-          </button>
-          <button
-            class="btn btn-primary rent-btn"
-            [disabled]="!book.status || book.stock <= 0"
-            (click)="onRentBook(book)"
-          >
-            @if (book.status && book.stock > 0) {
-            <span>📚 Rent</span>
-            } @else {
-            <span>❌ Unavailable</span>
-            }
+            📖 View Details
           </button>
         </div>
       </div>

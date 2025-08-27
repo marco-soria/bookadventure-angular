@@ -44,7 +44,7 @@
           <span class="genre-badge">{{ book()?.genreName }}</span>
         </div>
 
-        <div class="book-details">
+        <div class>
           @if (book()?.isbn) {
           <div class="detail-item">
             <strong>ISBN:</strong> {{ book()?.isbn }}
@@ -74,7 +74,7 @@
         </div>
 
         @if (book()?.description) {
-        <div class="book-description">
+        <div class="book-description pt-4">
           <h3>Description</h3>
           <p>{{ book()?.description }}</p>
         </div>
