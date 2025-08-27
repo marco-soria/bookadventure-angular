@@ -5,12 +5,12 @@ import { RentalReport } from '../../interfaces/admin.interfaces';
 import { AdminService } from '../../services/admin.service';
 
 @Component({
-  selector: 'app-rental-reports',
+  selector: 'app-book-reports',
   imports: [CommonModule, FormsModule],
-  templateUrl: './rental-reports.html',
-  styleUrl: './rental-reports.css',
+  templateUrl: './book-reports.html',
+  styleUrl: './book-reports.css',
 })
-export class RentalReports {
+export class BookReports {
   private adminService = inject(AdminService);
 
   // Estado

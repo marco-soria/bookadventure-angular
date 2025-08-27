@@ -49,23 +49,15 @@
 
     <!-- Tab Content -->
     @if (activeTab() === 'books') {
-      <app-books-management></app-books-management>
-    }
-
-    @if (activeTab() === 'genres') {
-      <app-genres-management></app-genres-management>
-    }
-
-    @if (activeTab() === 'customers') {
-      <app-customers-management></app-customers-management>
-    }
-
-    @if (activeTab() === 'rentals') {
-      <app-rentals-management></app-rentals-management>
-    }
-
-    @if (activeTab() === 'reports') {
-      <app-rental-reports></app-rental-reports>
+    <app-books-management></app-books-management>
+    } @if (activeTab() === 'genres') {
+    <app-genres-management></app-genres-management>
+    } @if (activeTab() === 'customers') {
+    <app-customers-management></app-customers-management>
+    } @if (activeTab() === 'rentals') {
+    <app-rentals-management></app-rentals-management>
+    } @if (activeTab() === 'reports') {
+    <app-book-reports></app-book-reports>
     }
   </div>
 </div>

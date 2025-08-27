@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
+import { BookReports } from './components/book-reports/book-reports';
 import { BooksManagement } from './components/books-management/books-management';
 import { CustomersManagement } from './components/customers-management/customers-management';
 import { GenresManagement } from './components/genres-management/genres-management';
-import { RentalReports } from './components/rental-reports/rental-reports';
 import { RentalsManagement } from './components/rentals-management/rentals-management';
 
 @Component({
@@ -14,7 +14,7 @@ import { RentalsManagement } from './components/rentals-management/rentals-manag
     GenresManagement,
     CustomersManagement,
     RentalsManagement,
-    RentalReports,
+    BookReports,
   ],
   templateUrl: './admin-panel.html',
   styleUrl: './admin-panel.css',
