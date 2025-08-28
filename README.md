@@ -1,6 +1,6 @@
 # 📚 BookAdventure - Frontend Application
 
-> A modern web application for library management built with Angular 18+ and DaisyUI
+> A modern web application for library management built with Angular 20+ and DaisyUI
 
 [![Angular](https://img.shields.io/badge/Angular-20+-red.svg)](https://angular.io/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
@@ -20,14 +20,14 @@
 
 ### Core Framework
 
-- **Angular 18+**: Main framework with Standalone Components
-- **TypeScript 5.6+**: Development language with static typing
+- **Angular**: Main framework with Standalone Components
+- **TypeScript**: Development language with static typing
 - **RxJS**: Reactive programming for state and event management
 
 ### UI & Styling
 
-- **DaisyUI 4.x**: Component system and themes
-- **TailwindCSS 3.x**: CSS utility framework
+- **DaisyUI**: Component system and themes
+- **TailwindCSS**: CSS utility framework
 - **SweetAlert2**: Elegant notifications and modals
 - **CSS Variables**: Customizable themes
 
@@ -87,9 +87,9 @@ src/
 
 ### Prerequisites
 
-- **Node.js** 18+
-- **npm** 9+ or **pnpm** 8+
-- **Angular CLI** 18+
+- **Node.js**
+- **npm** or **pnpm**
+- **Angular CLI**
 
 ### Installation
 
