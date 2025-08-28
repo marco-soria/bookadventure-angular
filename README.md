@@ -2,10 +2,10 @@
 
 > A modern web application for library management built with Angular 18+ and DaisyUI
 
-[![Angular](https://img.shields.io/badge/Angular-18+-red.svg)](https://angular.io/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.6+-blue.svg)](https://www.typescriptlang.org/)
-[![DaisyUI](https://img.shields.io/badge/DaisyUI-4.x-green.svg)](https://daisyui.com/)
-[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-blue.svg)](https://tailwindcss.com/)
+[![Angular](https://img.shields.io/badge/Angular-20+-red.svg)](https://angular.io/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
+[![DaisyUI](https://img.shields.io/badge/DaisyUI-5.x-green.svg)](https://daisyui.com/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.x-blue.svg)](https://tailwindcss.com/)
 
 ## 🚀 Key Features
 
